@@ -44,7 +44,7 @@ All provers run natively on modern Node.js (v22.6.0+). No compilers, no `npm ins
 
 ```bash
 # Clone the repository
-git clone https://github.com/sahil/distrib-provers.git
+git clone https://github.com/sahiln27042008-blip/distrib-provers.git
 cd distrib-provers
 
 # Run a specific high-stakes prover (e.g. JPMorgan Chase Zelle double-spending)
