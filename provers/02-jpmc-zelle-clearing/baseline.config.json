@@ -1,0 +1,115 @@
+{
+  "workflowId": "wf-jpmc-zelle-cross-bank-2026",
+  "workflowName": "JPMorgan Chase On-Prem Outage & Cross-Bank Zelle In-Doubt Mutation",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-channel-cascade",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "initiating-bank-usbank-client",
+      "nodeDescription": "Healthy counterparty bank (U.S. Bank) mobile/web clients submitting Zelle transfers",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "zelle-clearing-switch",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "zelle-clearing-switch"
+      ]
+    },
+    {
+      "name": "zelle-clearing-switch",
+      "nodeDescription": "Early Warning Services (EWS) Zelle central routing switch handling interbank transfer settlement",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 100,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "chase-onprem-core-banking",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DELAY",
+          "params": {
+            "durationMs": 5000
+          }
+        }
+      ],
+      "outboundEdges": [
+        "chase-onprem-core-banking"
+      ]
+    },
+    {
+      "name": "chase-onprem-core-banking",
+      "nodeDescription": "Chase on-premises hardware system experiencing internal transaction processing lock/fault",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "interbank-settlement-ledger",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "interbank-settlement-ledger"
+      ]
+    },
+    {
+      "name": "interbank-settlement-ledger",
+      "nodeDescription": "Durable interbank clearing ledger recording irreversible debit and credit settlements",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ]
+}

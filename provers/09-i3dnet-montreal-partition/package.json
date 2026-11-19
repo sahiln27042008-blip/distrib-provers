@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/i3dnet-montreal-partition",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for i3D.net Smartdc Montreal Post-Partition Coordination Deadlock (Nov 17-18, 2026)",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

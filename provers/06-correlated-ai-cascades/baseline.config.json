@@ -1,0 +1,118 @@
+{
+  "workflowId": "wf-correlated-ai-cascades-2026",
+  "workflowName": "Correlated AI API Cascades & Shared-Layer Multi-Provider Failover Collapse",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "nodes": [
+    {
+      "name": "enterprise-orchestration-router",
+      "nodeDescription": "Enterprise routing gateway dispatching mission-critical prompts across primary and secondary fallback model providers",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "primary-ai-provider",
+            "timeoutMs": 8000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "primary-ai-provider",
+        "secondary-fallback-provider"
+      ]
+    },
+    {
+      "name": "primary-ai-provider",
+      "nodeDescription": "Primary tier-1 frontier model API operating near maximum capacity and vulnerable to sudden surge saturation",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 35,
+            "ttlMs": 4000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "shared-underlying-cloud-substrate",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 35
+          }
+        }
+      ],
+      "outboundEdges": [
+        "shared-underlying-cloud-substrate"
+      ]
+    },
+    {
+      "name": "secondary-fallback-provider",
+      "nodeDescription": "Secondary fallback model provider configured for automatic redundancy but co-located on the same cloud region and transit routes",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 30,
+            "ttlMs": 4000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "shared-underlying-cloud-substrate",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "shared-underlying-cloud-substrate"
+      ]
+    },
+    {
+      "name": "shared-underlying-cloud-substrate",
+      "nodeDescription": "Common underlying cloud transit backbone, GPU cluster load balancers, and shared database dependencies",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

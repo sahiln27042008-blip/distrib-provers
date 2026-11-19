@@ -1,0 +1,108 @@
+{
+  "workflowId": "wf-railway-control-plane-security",
+  "workflowName": "Railway Control Plane Lateral Movement & Blast Radius Containment",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "control-plane-gateway",
+      "nodeDescription": "Public Railway API & GraphQL control-plane ingress receiving workspace commands",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "secret-encryption-service",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "secret-encryption-service"
+      ]
+    },
+    {
+      "name": "secret-encryption-service",
+      "nodeDescription": "Internal service managing encryption keys and decrypting customer environment variables",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "customer-workspace-vault",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "customer-workspace-vault"
+      ]
+    },
+    {
+      "name": "customer-workspace-vault",
+      "nodeDescription": "Persistent secret storage holding decrypted AI API keys and database credentials for 100K workspaces",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "build-deployment-runner",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "build-deployment-runner"
+      ]
+    },
+    {
+      "name": "build-deployment-runner",
+      "nodeDescription": "Global build and container execution infrastructure halted to quarantine lateral breach",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "VOLATILE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

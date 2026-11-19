@@ -1,0 +1,113 @@
+{
+  "workflowId": "wf-faa-atc-router-flood-2026",
+  "workflowName": "FAA Nationwide Departure Ground Stop - ATC Router Flood (Nov 13, 2026)",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "remote-edge-routers-eldorado-amarillo",
+      "nodeDescription": "Misconfigured L3Harris edge routers broadcasting ~1,000 connection attempts every 4-5s",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "regional-backbone-switches",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 1000
+          }
+        },
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 250
+          }
+        }
+      ],
+      "outboundEdges": [
+        "regional-backbone-switches"
+      ]
+    },
+    {
+      "name": "regional-backbone-switches",
+      "nodeDescription": "Inter-facility switching mesh overwhelmed by edge storm, emitting inconsistent/corrupt state frames",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "enroute-atc-dispatch-plane",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "CORRUPT",
+          "params": {
+            "mode": "SCHEMA_DRIFT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "enroute-atc-dispatch-plane"
+      ]
+    },
+    {
+      "name": "enroute-atc-dispatch-plane",
+      "nodeDescription": "22 En Route Air Traffic Control Centers (ARTCCs) poisoned by corrupt routing tables; 17 destabilized",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 22,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "nationwide-flight-clearance-registry",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "nationwide-flight-clearance-registry"
+      ]
+    },
+    {
+      "name": "nationwide-flight-clearance-registry",
+      "nodeDescription": "National Airspace System (NAS) authoritative flight plan and departure clearance registry",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ]
+}

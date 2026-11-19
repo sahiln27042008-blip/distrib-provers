@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/airbyte-cloud-blackout",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for Airbyte Cloud Multi-Stage Sync Blackout & Agentic RAG Pipeline Disruption",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

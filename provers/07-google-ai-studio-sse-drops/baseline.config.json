@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-google-antigravity-sse-drops-2026",
+  "workflowName": "Google Antigravity & AI Studio Paid-Tier Agent Termination and SSE Drops",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "nodes": [
+    {
+      "name": "developer-client-orchestrator",
+      "nodeDescription": "Developer IDE and autonomous agent runtimes dispatching paid-tier prompt execution and tool invocation turns",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "model-gateway-sse-proxy",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "model-gateway-sse-proxy"
+      ]
+    },
+    {
+      "name": "model-gateway-sse-proxy",
+      "nodeDescription": "Edge HTTP/2 reverse proxy terminating Server-Sent Events (SSE) connections and buffering token generation chunks",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 40,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "gemini-inference-workers",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "gemini-inference-workers"
+      ]
+    },
+    {
+      "name": "gemini-inference-workers",
+      "nodeDescription": "Gemini 4 Argon/Hydrogen/Carbon model serving nodes experiencing silent worker restarts and unhandled tool-call deserialization crashes",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 25,
+            "ttlMs": 3000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "prompt-cache-datastore",
+            "timeoutMs": 4000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 30
+          }
+        }
+      ],
+      "outboundEdges": [
+        "prompt-cache-datastore"
+      ]
+    },
+    {
+      "name": "prompt-cache-datastore",
+      "nodeDescription": "Distributed ephemeral prompt cache layer invalidated on silent server restarts, forcing expensive full-context re-ingestion",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "VOLATILE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

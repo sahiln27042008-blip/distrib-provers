@@ -1,0 +1,118 @@
+{
+  "workflowId": "wf-apple-icloud-auth-outage-2026",
+  "workflowName": "Apple iCloud Account Sign-In, App Store & AppleCare Outage",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "nodes": [
+    {
+      "name": "client-device-fleet",
+      "nodeDescription": "Global fleet of iOS/macOS client devices and native apps executing unthrottled authentication retries and password reset requests",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "edge-api-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "edge-api-gateway"
+      ]
+    },
+    {
+      "name": "edge-api-gateway",
+      "nodeDescription": "Apple edge ingress proxy and API gateway routing client requests and performing synchronous entitlement checks against the identity provider",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 100,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "icloud-account-signin-idp",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "icloud-account-signin-idp",
+        "apple-ecosystem-services"
+      ]
+    },
+    {
+      "name": "icloud-account-signin-idp",
+      "nodeDescription": "Central iCloud Account & Sign In identity provider undergoing slow response degradation and service saturation for all users",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 30,
+            "ttlMs": 3000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "apple-ecosystem-services",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 30
+          }
+        }
+      ],
+      "outboundEdges": [
+        "apple-ecosystem-services"
+      ]
+    },
+    {
+      "name": "apple-ecosystem-services",
+      "nodeDescription": "Downstream ecosystem services (App Store, Apple Music, AppleCare on Device) hard-blocked by live synchronous identity gate failures",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

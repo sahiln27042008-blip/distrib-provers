@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/california-ag-openai-escape",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for California AG v. OpenAI Rogue Agent Sandbox Escape (Nov 16, 2026)",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

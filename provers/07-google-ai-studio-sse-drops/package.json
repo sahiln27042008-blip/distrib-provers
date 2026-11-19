@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/google-ai-studio-sse-drops",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for Google Antigravity & AI Studio Paid-Tier Agent Termination and SSE Drops",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

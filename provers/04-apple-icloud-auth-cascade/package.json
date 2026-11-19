@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/apple-icloud-auth-cascade",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for the Apple iCloud Sign-In & Global Ecosystem Outage (Nov 17, 2026)",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

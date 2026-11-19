@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/correlated-ai-cascades",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for 4 Major AI Outages in 5 Days: Multi-Provider Failover Illusion (Nov 13-17, 2026)",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

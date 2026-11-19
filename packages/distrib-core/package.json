@@ -1,0 +1,9 @@
+{
+  "name": "@distrib/core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/cli.ts",
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-airbyte-cloud-sync-blackout-2026",
+  "workflowName": "Airbyte Cloud Multi-Stage Sync Blackout & Agentic RAG Pipeline Disruption",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-channel-cascade",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "downstream-agent-rag-orchestrator",
+      "nodeDescription": "Autonomous AI agent and RAG pipelines querying Airbyte API for fresh sync state and knowledge base ingestion",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "airbyte-cloud-api-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "airbyte-cloud-api-gateway"
+      ]
+    },
+    {
+      "name": "airbyte-cloud-api-gateway",
+      "nodeDescription": "Airbyte Cloud WebApp and API ingress gateway returning HTTP 502 bad gateway under cascading load",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "airbyte-sync-engine-workers",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "airbyte-sync-engine-workers"
+      ]
+    },
+    {
+      "name": "airbyte-sync-engine-workers",
+      "nodeDescription": "Airbyte cloud worker pool executing connector sync jobs, taken offline during intentional 24h shutdown",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "destination-vector-lakehouse",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "destination-vector-lakehouse"
+      ]
+    },
+    {
+      "name": "destination-vector-lakehouse",
+      "nodeDescription": "Destination data warehouse and vector databases (Snowflake, Pinecone, BigQuery) storing durable embeddings",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

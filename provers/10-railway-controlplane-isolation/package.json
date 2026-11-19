@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/railway-controlplane-isolation",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for Railway Control Plane Security Incident & Blast Radius Isolation",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

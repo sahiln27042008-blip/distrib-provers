@@ -1,0 +1,34 @@
+{
+  "name": "distrib-provers",
+  "version": "1.0.0",
+  "description": "Deterministic Reproduction and Formal Invariant Verification Provers for Real-World Production Outages",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "test": "node run-all.ts",
+    "test:faa": "cd provers/01-faa-atc-ground-stop && node src/test-harness.ts",
+    "test:jpmc": "cd provers/02-jpmc-zelle-clearing && node src/test-harness.ts",
+    "test:openai": "cd provers/03-california-ag-openai-escape && node src/test-harness.ts",
+    "test:apple": "cd provers/04-apple-icloud-auth-cascade && node src/test-harness.ts",
+    "test:microsoft": "cd provers/05-microsoft-exchange-pir && node src/test-harness.ts",
+    "test:correlated": "cd provers/06-correlated-ai-cascades && node src/test-harness.ts",
+    "test:studio": "cd provers/07-google-ai-studio-sse-drops && node src/test-harness.ts",
+    "test:airbyte": "cd provers/08-airbyte-cloud-blackout && node src/test-harness.ts",
+    "test:i3dnet": "cd provers/09-i3dnet-montreal-partition && node src/test-harness.ts",
+    "test:railway": "cd provers/10-railway-controlplane-isolation && node src/test-harness.ts"
+  },
+  "keywords": [
+    "distributed-systems",
+    "formal-verification",
+    "jepsen",
+    "fault-injection",
+    "chaos-engineering",
+    "post-mortem",
+    "outage-reproduction"
+  ],
+  "author": "Sahil",
+  "license": "Apache-2.0"
+}
