@@ -1,0 +1,17 @@
+{
+  "repo": "mike-marcacci/node-redlock",
+  "commit_sha": "afe5cf9",
+  "audited_at": "2026-11-15T20:17:45+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "distributed-lease-unfenced-write",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Distributed Lock Acquisition, Renewal & Un-fenced Routine Execution",
+      "verified_files": [
+        "src/index.ts:310-335",
+        "src/index.ts:634-655",
+        "src/index.ts:705-745"
+      ]
+    }
+  ]
+}

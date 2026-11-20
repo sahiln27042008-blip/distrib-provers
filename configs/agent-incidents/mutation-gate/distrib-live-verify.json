@@ -1,0 +1,87 @@
+{
+  "audit": {
+    "success": true,
+    "verdict": "BLOCKED",
+    "status": "FAILURE_FOUND",
+    "scenarioId": "wf-enterprise-autonomous-ai-coding-kvu",
+    "shortestDepth": 1,
+    "minimalCounterexample": [
+      {
+        "consonantKind": "DUPLICATE",
+        "targetVowelId": "channel-1-2",
+        "params": { "count": 2 },
+        "targetName": "agent-orchestrator → production-database",
+        "businessTarget": "agent-orchestrator → production-database",
+        "description": "DUPLICATE affects agent-orchestrator → production-database [channel-1-2]"
+      }
+    ],
+    "failurePath": "agent-orchestrator → production-database",
+    "verdictSummary": "BLOCKED: Enterprise Agent Workflow [DUPLICATE on agent-orchestrator → production-database]",
+    "violatedInvariants": ["r04-network-idempotency"],
+    "evaluationsCount": 14,
+    "durationMs": 221.1085,
+    "fingerprint": "d14f60f4d062ebde95eba493c0ea1a23d3e0549097a1d44290902c54a3eef62e"
+  },
+  "latencyCliff": {
+    "success": true,
+    "status": "CLIFF_FOUND",
+    "scenarioId": "wf-enterprise-autonomous-ai-coding-kvu",
+    "targetChannel": "channel-1-2",
+    "testedRange": { "low": 0, "high": 60000 },
+    "cliffMs": 10006.5,
+    "safeMs": 9992,
+    "collapseMs": 10021,
+    "evaluationsCount": 16,
+    "iterations": 11,
+    "tolerance": 50,
+    "durationMs": 48.3456
+  },
+  "singleAblationVerify": {
+    "success": true,
+    "verdict": "BLOCKED",
+    "verdictSummary": "BLOCKED: Enterprise Agent Workflow - Violated: native-lease-epoch-expiry on agent-orchestrator",
+    "status": "FAILURE_FOUND",
+    "scenarioId": "wf-enterprise-autonomous-ai-coding-kvu",
+    "ablation": "enforce_idempotency",
+    "ablations": ["enforce_idempotency"],
+    "immuneUpToDepth": 0,
+    "regressionCheck": "FAILED",
+    "shortestDepth": 1,
+    "minimalCounterexample": [
+      {
+        "consonantKind": "SATURATE",
+        "targetVowelId": "vowel-1-1",
+        "params": { "loadUnits": 1 },
+        "targetName": "agent-orchestrator",
+        "businessTarget": "agent-orchestrator",
+        "description": "SATURATE affects agent-orchestrator [vowel-1-1]"
+      }
+    ],
+    "failurePath": "agent-orchestrator",
+    "violatedInvariants": ["native-lease-epoch-expiry"],
+    "evaluationsCount": 19,
+    "durationMs": 61.1903
+  },
+  "combinedAblationVerify": {
+    "success": true,
+    "verdict": "APPROVED",
+    "verdictSummary": "APPROVED: Enterprise Agent Workflow - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "status": "NO_FAILURE_WITHIN_BOUND",
+    "scenarioId": "wf-enterprise-autonomous-ai-coding-kvu",
+    "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "ablations": [
+      "enforce_idempotency",
+      "zero_hold_lease",
+      "fencing_token_enabled",
+      "shed_at_threshold"
+    ],
+    "immuneUpToDepth": 2,
+    "regressionCheck": "PASSED",
+    "shortestDepth": null,
+    "minimalCounterexample": [],
+    "failurePath": "",
+    "violatedInvariants": [],
+    "evaluationsCount": 931,
+    "durationMs": 1050.8803
+  }
+}

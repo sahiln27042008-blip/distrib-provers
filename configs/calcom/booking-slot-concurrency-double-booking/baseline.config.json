@@ -1,0 +1,76 @@
+{
+  "workflowId": "calcom-slot-double-booking",
+  "workflowName": "Cal.com Slot Availability & Concurrent Double-Booking Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "booker-request-coordinator",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "slot-availability-engine",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "slot-availability-engine"
+      ]
+    },
+    {
+      "name": "slot-availability-engine",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "booking-calendar-ledger",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "time_slot_occupancy_status",
+            "actors": [
+              "concurrent-booker-client-A",
+              "concurrent-booker-client-B"
+            ],
+            "downstreamAction": "create_booking"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "booking-calendar-ledger"
+      ]
+    },
+    {
+      "name": "booking-calendar-ledger",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

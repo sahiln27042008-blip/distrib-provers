@@ -1,0 +1,108 @@
+{
+  "workflowId": "wf-fcc-lms-visibility-regression",
+  "workflowName": "FCC LMS Competitive Window State Visibility Regression",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "applicant-certification-ingress",
+      "nodeDescription": "Broadcasters submitting and certifying competitive-window broadcast applications",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "lms-application-registry",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "lms-application-registry"
+      ]
+    },
+    {
+      "name": "lms-application-registry",
+      "nodeDescription": "Authoritative database managing application state machine and confidentiality window lease",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "search-index-ingest-pipeline",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "search-index-ingest-pipeline"
+      ]
+    },
+    {
+      "name": "search-index-ingest-pipeline",
+      "nodeDescription": "CDC and search index synchronization worker syncing records to public search tier",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "VOLATILE",
+            "idempotencyEnforced": false
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "public-search-index",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "public-search-index"
+      ]
+    },
+    {
+      "name": "public-search-index",
+      "nodeDescription": "Public FCC LMS query endpoint prematurely exposing 170 confidential applications",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

@@ -1,0 +1,17 @@
+{
+  "repo": "SBS-GIVC/sbs",
+  "commit_sha": "ae3ad91",
+  "audited_at": "2026-11-16T00:14:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "nphies-claim-submission-duplicate-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "NPHIES Bridge Claims Submission & Service Request State Synchronization",
+      "verified_files": [
+        "nphies-bridge/healthcare_api.py:593-665",
+        "WORKFLOW_SIMULATION.py:40-90",
+        "nphies-bridge/healthcare_api.py:387-430"
+      ]
+    }
+  ]
+}

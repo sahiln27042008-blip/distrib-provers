@@ -1,0 +1,14 @@
+{
+  "repo": "Sibght/Last-Mile-Delivery-Optimization",
+  "commit": "b953a65",
+  "name": "Dubai Last-Mile Delivery Optimization",
+  "description": "VRP and TSP route solver integrating real-time TomTom traffic API and OSMnx road network for Dubai logistics hubs",
+  "subsystems": [
+    {
+      "name": "TomTom Traffic Ingestion & Driver Assignment Concurrency",
+      "slug": "tomtom-traffic-driver-assignment-race",
+      "entrypoint": "AdvancedVRP.py:58-76, AdvancedVRP.py:141-160, AdvancedVRP.py:485-530",
+      "criticality": "HIGH (Silent 1 km/h network fallbacks & duplicate driver dispatch)"
+    }
+  ]
+}

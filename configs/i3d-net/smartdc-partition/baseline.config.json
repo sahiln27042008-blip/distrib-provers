@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-i3dnet-smartdc-montreal-partition-2026",
+  "workflowName": "i3D.net Smartdc Montreal Network Partition & Standalone Recovery Deadlock",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-channel-cascade",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "edge-transit-gateway",
+      "nodeDescription": "Datacenter border routers and edge transit gateways in Smartdc Montreal experiencing asymmetric packet drops",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "smartdc-coordination-leader",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "smartdc-coordination-leader"
+      ]
+    },
+    {
+      "name": "smartdc-coordination-leader",
+      "nodeDescription": "Central cluster coordination unit and consensus controller managing service leases and membership discovery",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 30,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "internal-microservices-mesh",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 30
+          }
+        }
+      ],
+      "outboundEdges": [
+        "internal-microservices-mesh"
+      ]
+    },
+    {
+      "name": "internal-microservices-mesh",
+      "nodeDescription": "Internal hosting and virtualization daemons unable to communicate after network restoration due to broken pairing",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "local-cluster-datastore",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "local-cluster-datastore"
+      ]
+    },
+    {
+      "name": "local-cluster-datastore",
+      "nodeDescription": "Distributed metadata and state ledger requiring manual standalone mode override to unblock service boot",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

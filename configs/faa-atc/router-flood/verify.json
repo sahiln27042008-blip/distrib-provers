@@ -1,0 +1,16 @@
+{
+  "verdict": "APPROVED",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "wf-faa-atc-router-flood-2026",
+  "appliedAblations": [
+    "enforce_idempotency",
+    "zero_hold_lease",
+    "fencing_token_enabled",
+    "shed_at_threshold"
+  ],
+  "violatedInvariants": [],
+  "minimalCounterexample": [],
+  "evaluationsCount": 1191,
+  "durationMs": 92070.81,
+  "findings": []
+}

@@ -1,0 +1,76 @@
+{
+  "workflowId": "temporal-cancellation-scope-sever",
+  "workflowName": "Temporal TypeScript SDK Workflow Cancellation Scope & Activity Compensation Execution",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "temporal-workflow-orchestrator",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "temporal-activity-executor",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "temporal-activity-executor"
+      ]
+    },
+    {
+      "name": "temporal-activity-executor",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "clearing-banking-escrow-vault",
+            "timeoutMs": 45000,
+            "idempotencyEnabled": false,
+            "senderKey": "temporal_wf_saga_settle_01",
+            "receiverDedupKey": "temporal_wf_saga_settle_attempt_1"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "idempotencyKey",
+            "intermediary": "scheduleActivityNextHandler",
+            "newReceiverKey": "temporal_wf_saga_settle_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "clearing-banking-escrow-vault"
+      ]
+    },
+    {
+      "name": "clearing-banking-escrow-vault",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

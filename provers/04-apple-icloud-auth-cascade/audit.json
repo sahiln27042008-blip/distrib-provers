@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-apple-icloud-auth-outage-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "icloud-account-signin-idp",
+      "businessTarget": "icloud-account-signin-idp",
+      "description": "SATURATE affects icloud-account-signin-idp [vowel-3-1]"
+    }
+  ],
+  "failurePath": "icloud-account-signin-idp",
+  "verdictSummary": "BLOCKED: Apple iCloud Account Sign-In, App Store & AppleCare Outage [SATURATE on icloud-account-signin-idp]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 4.554899999988265,
+  "fingerprint": "e22c7e3d3d6b31555124e17f1fefc2f3af972c11619ca3540abff7277c2426f7",
+  "executiveSummary": "BLOCKED: Apple iCloud Account Sign-In, App Store & AppleCare Outage; native-lease-epoch-expiry, native-channel-cascade violated on icloud-account-signin-idp.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "icloud-account-signin-idp",
+      "businessTarget": "icloud-account-signin-idp",
+      "description": "SATURATE affects icloud-account-signin-idp [vowel-3-1]"
+    }
+  ]
+}

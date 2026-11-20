@@ -1,0 +1,28 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wafid-visa-clearance-duplicate",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-2-2",
+      "params": {
+        "strippedHeader": "appointment_number",
+        "intermediary": "save_appointment.php",
+        "newReceiverKey": "wafid_appointment_attempt_2"
+      },
+      "targetName": "wafid-appointment-service → gcc-health-council-registry",
+      "businessTarget": "wafid-appointment-service → gcc-health-council-registry",
+      "description": "STRIP_ON_RETRY affects wafid-appointment-service → gcc-health-council-registry [vowel-2-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 143.6046,
+  "executiveSummary": "BLOCKED: Wafid Medical Centers GCC Visa Eligibility & Appointment Re-registration; native-network-idempotency, r04-network-idempotency violated on wafid-appointment-service → gcc-health-council-registry.",
+  "findings": []
+}

@@ -1,0 +1,76 @@
+{
+  "workflowId": "bullmq-stalled-lock-expiry",
+  "workflowName": "BullMQ Worker Lock Expiry & Stalled Job Duplicate Execution",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "bullmq-job-scheduler",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "bullmq-worker-processor",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "bullmq-worker-processor"
+      ]
+    },
+    {
+      "name": "bullmq-worker-processor",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "crypto-custody-vault-db",
+            "timeoutMs": 35000,
+            "idempotencyEnabled": false,
+            "senderKey": "withdrawal_job_101",
+            "receiverDedupKey": "withdrawal_job_stalled_retry_102"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "idempotencyKey",
+            "intermediary": "moveStalledJobsToWait",
+            "newReceiverKey": "withdrawal_stalled_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "crypto-custody-vault-db"
+      ]
+    },
+    {
+      "name": "crypto-custody-vault-db",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

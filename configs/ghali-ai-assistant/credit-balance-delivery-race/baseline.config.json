@@ -1,0 +1,87 @@
+{
+  "workflowId": "ghali-credit-balance-delivery-race",
+  "workflowName": "Ghali AI Assistant Multi-Channel Messaging, Credit Reservation & Webhook Retry Concurrency",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "native-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "whatsapp-webhook-gateway",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "ghali-agent-orchestrator",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "ghali-agent-orchestrator"
+      ]
+    },
+    {
+      "name": "ghali-agent-orchestrator",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 25000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "user-credit-ledger-store",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false,
+            "senderKey": "dispatch_inference_user_481_msg_99",
+            "receiverDedupKey": "deduct_credit_attempt_1"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "user_available_credits",
+            "actors": [
+              "whatsapp-webhook-gateway",
+              "ghali-agent-orchestrator"
+            ],
+            "downstreamAction": "dispatch_expensive_ai_inference"
+          }
+        },
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "X-Telegram-Update-Id",
+            "intermediary": "POST /webhook/whatsapp",
+            "newReceiverKey": "deduct_credit_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "user-credit-ledger-store"
+      ]
+    },
+    {
+      "name": "user-credit-ledger-store",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

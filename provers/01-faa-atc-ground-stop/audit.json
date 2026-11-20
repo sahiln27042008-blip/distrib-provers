@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-faa-atc-router-flood-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "regional-backbone-switches",
+      "businessTarget": "regional-backbone-switches",
+      "description": "SATURATE affects regional-backbone-switches [vowel-2-1]"
+    }
+  ],
+  "failurePath": "regional-backbone-switches",
+  "verdictSummary": "BLOCKED: FAA Nationwide Departure Ground Stop - ATC Router Flood (Nov 13, 2026) [SATURATE on regional-backbone-switches]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 22,
+  "durationMs": 1726.8158,
+  "fingerprint": "8721c6f5259d7ad45a6ccf3fd496ee9b0d0fceac077235d2c354f3a87c3c3066",
+  "executiveSummary": "BLOCKED: FAA Nationwide Departure Ground Stop - ATC Router Flood (Nov 13, 2026); native-lease-epoch-expiry, native-channel-cascade violated on regional-backbone-switches.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "regional-backbone-switches",
+      "businessTarget": "regional-backbone-switches",
+      "description": "SATURATE affects regional-backbone-switches [vowel-2-1]"
+    }
+  ]
+}

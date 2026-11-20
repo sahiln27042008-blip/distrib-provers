@@ -1,0 +1,109 @@
+{
+  "workflowId": "wf-m365-pir-bulkhead-cascade",
+  "workflowName": "Microsoft Exchange Online PIR Bulkhead Failure & High-Core Lock Contention",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "teams-exchange-shared-ingress",
+      "nodeDescription": "Combined Teams failover surge and Exchange Online client traffic hitting shared ingress",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "primary-gateway-tier-highcore",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "primary-gateway-tier-highcore"
+      ]
+    },
+    {
+      "name": "primary-gateway-tier-highcore",
+      "nodeDescription": "High-core gateway fleet with 14% capacity offline and latent July Windows lock contention",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 8,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "bulkhead-isolation-controller",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 12
+          }
+        }
+      ],
+      "outboundEdges": [
+        "bulkhead-isolation-controller"
+      ]
+    },
+    {
+      "name": "bulkhead-isolation-controller",
+      "nodeDescription": "Watertight compartment boundary failing to contain cross-unit cascading saturation",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 4,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "exchange-backend-cluster",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 6
+          }
+        }
+      ],
+      "outboundEdges": [
+        "exchange-backend-cluster"
+      ]
+    },
+    {
+      "name": "exchange-backend-cluster",
+      "nodeDescription": "Durable Exchange Online mailboxes, calendars, and Graph services",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

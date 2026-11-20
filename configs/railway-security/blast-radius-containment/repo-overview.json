@@ -1,0 +1,16 @@
+{
+  "repo": "railwayapp/incident-october-21",
+  "commit": "oct-2026",
+  "incidentScope": "Railway October 21 Security Incident Report (Control-plane lateral movement and secrets decryption across ~100K workspaces)",
+  "subsystem": "Control Plane Lateral Movement, Tenant Secret Isolation & Blast Radius Quarantine",
+  "invariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "auditVerdict": "BLOCKED",
+  "auditDurationMs": 290.3,
+  "verifyVerdict": "APPROVED",
+  "verifyDurationMs": 3557.4,
+  "verifyEvaluations": 1123
+}

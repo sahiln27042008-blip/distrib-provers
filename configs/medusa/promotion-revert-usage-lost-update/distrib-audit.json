@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "medusa-promotion-revert-usage",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "stateKey": "promotion_budget_used",
+        "actors": [
+          "checkout-saga-revert",
+          "concurrent-checkout-register"
+        ],
+        "downstreamAction": "update_budget"
+      },
+      "targetName": "revert-usage-compensation",
+      "businessTarget": "revert-usage-compensation",
+      "description": "STALE_READ_WITHOUT_LOCK affects revert-usage-compensation [vowel-3-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 79.08,
+  "executiveSummary": "BLOCKED: Medusa Cart Completion & Promotion Reversion; native-stale-read-double-action violated on revert-usage-compensation.",
+  "findings": []
+}

@@ -1,0 +1,16 @@
+{
+  "repo": "autonomous-agents/production-mutation-gate",
+  "commit": "live-2026",
+  "incidentScope": "33 Public Cases of AI Agents Breaking Production (Eon.io Report)",
+  "subsystem": "Autonomous Agent Mutation Gate, Byzantine Verification Oracle & Credential Plane Isolation",
+  "invariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "auditVerdict": "BLOCKED",
+  "auditDurationMs": 171.3,
+  "verifyVerdict": "APPROVED",
+  "verifyDurationMs": 773.3,
+  "verifyEvaluations": 1057
+}

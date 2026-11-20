@@ -1,0 +1,18 @@
+{
+  "repo": "typeorm/typeorm",
+  "commit_sha": "7a2707c",
+  "audited_at": "2026-11-15T20:23:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "optimistic-lock-read-only-lost-update",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "QueryBuilder Optimistic Lock & Mutation Persistence",
+      "verified_files": [
+        "packages/typeorm/src/query-builder/SelectQueryBuilder.ts:1615-1625",
+        "packages/typeorm/src/query-builder/SelectQueryBuilder.ts:1705-1740",
+        "packages/typeorm/src/error/OptimisticLockCanNotBeUsedError.ts:1-12",
+        "packages/typeorm/src/error/OptimisticLockVersionMismatchError.ts:1-15"
+      ]
+    }
+  ]
+}

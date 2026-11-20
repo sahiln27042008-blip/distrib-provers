@@ -1,0 +1,16 @@
+{
+  "repo": "runcycles/ai-agent-incidents-2026",
+  "commit": "nov-2026",
+  "incidentScope": "State of AI Agent Incidents: Retry Storms, TOCTOU Races & Silent 200 OK Failures ($47K loss)",
+  "subsystem": "Multi-Layer Retry Amplification, Non-Atomic Budget Reservation & Semantic Error Corruption",
+  "invariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "auditVerdict": "BLOCKED",
+  "auditDurationMs": 80.1,
+  "verifyVerdict": "APPROVED",
+  "verifyDurationMs": 1157.6,
+  "verifyEvaluations": 1191
+}

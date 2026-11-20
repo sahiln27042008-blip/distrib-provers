@@ -1,0 +1,27 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "inngest-step-sleep-collapse",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-1-1",
+      "params": {
+        "strippedHeader": "idempotencyKey",
+        "intermediary": "step-replay-memoizer",
+        "newReceiverKey": "step_run_attempt_2"
+      },
+      "targetName": "inngest-step-executor → inngest-execution-engine",
+      "businessTarget": "inngest-step-executor → inngest-execution-engine",
+      "description": "STRIP_ON_RETRY affects inngest-step-executor → inngest-execution-engine [vowel-1-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 400.45,
+  "executiveSummary": "BLOCKED: Inngest Step Duration Serialization & Premature Execution Cliff; native-network-idempotency violated on inngest-step-executor → inngest-execution-engine.",
+  "findings": []
+}

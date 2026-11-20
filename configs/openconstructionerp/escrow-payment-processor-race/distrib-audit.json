@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "openconstructionerp-escrow-payment-processor",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "developer_escrow_outstanding_balance",
+        "actors": [
+          "buyer-payment-webhook",
+          "escrow-payment-processor"
+        ],
+        "downstreamAction": "settle_escrow_installment"
+      },
+      "targetName": "escrow-payment-processor",
+      "businessTarget": "escrow-payment-processor",
+      "description": "STALE_READ_WITHOUT_LOCK affects escrow-payment-processor [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 137.56060000000002,
+  "executiveSummary": "BLOCKED: OpenConstructionERP Developer Escrow Payment Processing & Outstanding Balance Roll-up; native-stale-read-double-action violated on escrow-payment-processor.",
+  "findings": []
+}

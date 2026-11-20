@@ -1,0 +1,17 @@
+{
+  "repo": "temporalio/sdk-typescript",
+  "commit_sha": "4a5ee34",
+  "audited_at": "2026-11-15T20:10:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "cancellation-scope-compensation-sever",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Workflow Cancellation Scope & Activity Compensation Execution",
+      "verified_files": [
+        "packages/workflow/src/cancellation-scope.ts:23-88",
+        "packages/workflow/src/workflow.ts:228-245",
+        "packages/workflow/src/cancellation-scope.ts:230-245"
+      ]
+    }
+  ]
+}

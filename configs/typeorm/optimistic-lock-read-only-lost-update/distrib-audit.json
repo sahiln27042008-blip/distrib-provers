@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "typeorm-optimistic-lock-lost-update",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "entity_version_counter",
+        "actors": [
+          "concurrent-typeorm-transaction-1",
+          "concurrent-typeorm-transaction-2"
+        ],
+        "downstreamAction": "commit_versioned_mutation"
+      },
+      "targetName": "typeorm-query-builder",
+      "businessTarget": "typeorm-query-builder",
+      "description": "STALE_READ_WITHOUT_LOCK affects typeorm-query-builder [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 154.0388,
+  "executiveSummary": "BLOCKED: TypeORM SelectQueryBuilder Optimistic Lock Read-Only Assertion & Lost Update; native-stale-read-double-action violated on typeorm-query-builder.",
+  "findings": []
+}

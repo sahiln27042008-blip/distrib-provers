@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "uaemcp-tax-cache-ratelimit-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 150
+      },
+      "targetName": "uaemcp-server",
+      "businessTarget": "uaemcp-server",
+      "description": "SATURATE affects uaemcp-server [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 88.94240000000002,
+  "executiveSummary": "BLOCKED: UAE Government Data Intelligence MCP SWR Cache Invalidation & Rate Limit Concurrency; native-lease-epoch-expiry, native-channel-cascade violated on uaemcp-server.",
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "bullmq-stalled-lock-expiry",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-2-2",
+      "params": {
+        "strippedHeader": "idempotencyKey",
+        "intermediary": "moveStalledJobsToWait",
+        "newReceiverKey": "withdrawal_stalled_attempt_2"
+      },
+      "targetName": "bullmq-worker-processor → crypto-custody-vault-db",
+      "businessTarget": "bullmq-worker-processor → crypto-custody-vault-db",
+      "description": "STRIP_ON_RETRY affects bullmq-worker-processor → crypto-custody-vault-db [vowel-2-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 320.32,
+  "executiveSummary": "BLOCKED: BullMQ Worker Lock Expiry & Stalled Job Duplicate Execution; native-network-idempotency, r04-network-idempotency violated on bullmq-worker-processor → crypto-custody-vault-db.",
+  "findings": []
+}

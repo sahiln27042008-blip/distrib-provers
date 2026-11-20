@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "dld-mcp-data-query-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "dld_property_transaction_ledger",
+        "actors": [
+          "dld-title-deed-registry",
+          "dld-mcp-query-engine"
+        ],
+        "downstreamAction": "emit_underwriting_valuation"
+      },
+      "targetName": "dld-mcp-query-engine",
+      "businessTarget": "dld-mcp-query-engine",
+      "description": "STALE_READ_WITHOUT_LOCK affects dld-mcp-query-engine [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 269.29320000000007,
+  "executiveSummary": "BLOCKED: Dubai Land Department (DLD) Live Query Engine & Property Valuation Checkpoint Race; native-stale-read-double-action violated on dld-mcp-query-engine.",
+  "findings": []
+}

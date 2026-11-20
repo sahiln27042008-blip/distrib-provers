@@ -1,0 +1,19 @@
+{
+  "repo": "mahdi-salmanzade/MCP-Dubai",
+  "commit_sha": "8793c5f",
+  "audited_at": "2026-11-16T19:12:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "oauth-token-refresh-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Dubai Pulse OAuth2 Token Refresh, Shared HttpClient POST Retry & RTA Booking Concurrency",
+      "verified_files": [
+        "src/mcp_dubai/_shared/auth.py:102-145",
+        "src/mcp_dubai/_shared/auth.py:183-220",
+        "src/mcp_dubai/_shared/auth.py:236-278",
+        "src/mcp_dubai/_shared/http_client.py:211-252",
+        "src/mcp_dubai/server.py:1-50"
+      ]
+    }
+  ]
+}

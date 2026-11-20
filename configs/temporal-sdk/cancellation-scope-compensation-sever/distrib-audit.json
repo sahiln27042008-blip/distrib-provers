@@ -1,0 +1,28 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "temporal-cancellation-scope-sever",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-2-2",
+      "params": {
+        "strippedHeader": "idempotencyKey",
+        "intermediary": "scheduleActivityNextHandler",
+        "newReceiverKey": "temporal_wf_saga_settle_attempt_2"
+      },
+      "targetName": "temporal-activity-executor → clearing-banking-escrow-vault",
+      "businessTarget": "temporal-activity-executor → clearing-banking-escrow-vault",
+      "description": "STRIP_ON_RETRY affects temporal-activity-executor → clearing-banking-escrow-vault [vowel-2-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 259.5309,
+  "executiveSummary": "BLOCKED: Temporal TypeScript SDK Workflow Cancellation Scope & Activity Compensation Execution; native-network-idempotency, r04-network-idempotency violated on temporal-activity-executor → clearing-banking-escrow-vault.",
+  "findings": []
+}

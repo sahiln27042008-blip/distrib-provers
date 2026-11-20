@@ -1,0 +1,83 @@
+{
+  "workflowId": "mcp-dubai-oauth-post-retry-race",
+  "workflowName": "Dubai Pulse OAuth2 Token Refresh, Shared HttpClient POST Retry & RTA Booking Concurrency",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "autonomous-dubai-agent",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "mcp-dubai-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "mcp-dubai-gateway"
+      ]
+    },
+    {
+      "name": "mcp-dubai-gateway",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubai-pulse-and-rta-api",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "dubai_pulse_oauth_token",
+            "actors": [
+              "autonomous-dubai-agent",
+              "mcp-dubai-gateway"
+            ],
+            "downstreamAction": "refresh_oauth_bearer_token"
+          }
+        },
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 2
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubai-pulse-and-rta-api"
+      ]
+    },
+    {
+      "name": "dubai-pulse-and-rta-api",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

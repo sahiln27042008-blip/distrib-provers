@@ -1,0 +1,131 @@
+{
+  "workflowId": "uaemcp-stale-cache-rate-limit-race",
+  "workflowName": "UAEMCP Government Data Cache Invalidation & Rate Limiting Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "uae-data-intelligence-client",
+      "nodeDescription": "Enterprise AI agent querying UAE government data via MCP",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "uaemcp-rate-limiter",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "uaemcp-rate-limiter"
+      ]
+    },
+    {
+      "name": "uaemcp-rate-limiter",
+      "nodeDescription": "In-memory rate limit bucket check (src/rate-limit.ts:18-32)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 60000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "stale-while-revalidate-cache",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 5
+          }
+        }
+      ],
+      "outboundEdges": [
+        "stale-while-revalidate-cache"
+      ]
+    },
+    {
+      "name": "stale-while-revalidate-cache",
+      "nodeDescription": "Stale-while-revalidate memory cache (src/dashboard.ts:93-103)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "fta-upstream-connector",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "fta_tax_regulation_snapshot",
+            "actors": [
+              "enterprise-tax-query-agent",
+              "background-cache-refresh-worker"
+            ],
+            "downstreamAction": "serve_tax_intelligence"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "fta-upstream-connector"
+      ]
+    },
+    {
+      "name": "fta-upstream-connector",
+      "nodeDescription": "Connector to Federal Tax Authority and official registries (src/tax-archive.ts:22-33)",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "federal-tax-authority-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "federal-tax-authority-gateway"
+      ]
+    },
+    {
+      "name": "federal-tax-authority-gateway",
+      "nodeDescription": "Upstream UAE Federal Tax Authority official data repository",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

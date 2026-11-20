@@ -1,0 +1,126 @@
+{
+  "workflowId": "dubiprop-dld-retry-storm",
+  "workflowName": "DubiProp Streamlit Un-cached DLD Query & Upstream Connection Pool Saturation",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "streamlit-frontend-client",
+      "nodeDescription": "Investor browser session interacting with property filter widgets",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubiprop-agent-runtime",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubiprop-agent-runtime"
+      ]
+    },
+    {
+      "name": "dubiprop-agent-runtime",
+      "nodeDescription": "Streamlit Python execution thread re-rendering unconditionally (agent.py:166)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dld-gateway-session",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dld-gateway-session"
+      ]
+    },
+    {
+      "name": "dld-gateway-session",
+      "nodeDescription": "Requests Session with HTTPAdapter retry on 429/500/503 (agent.py:24-34)",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dld-api-connection-pool",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DELAY",
+          "params": {
+            "durationMs": 35000
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dld-api-connection-pool"
+      ]
+    },
+    {
+      "name": "dld-api-connection-pool",
+      "nodeDescription": "Outbound HTTP connection pool to Dubai Land Department",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 3,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubai-land-department-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 3
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubai-land-department-gateway"
+      ]
+    },
+    {
+      "name": "dubai-land-department-gateway",
+      "nodeDescription": "Upstream government gateway.dubailand.gov.ae endpoint",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

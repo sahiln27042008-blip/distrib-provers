@@ -1,0 +1,76 @@
+{
+  "workflowId": "redlock-unfenced-lease-write",
+  "workflowName": "Node Redlock Distributed Lease Expiry & Un-fenced Storage Mutation",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "redlock-cluster-orchestrator",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "redlock-lease-client",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "redlock-lease-client"
+      ]
+    },
+    {
+      "name": "redlock-lease-client",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "vault-ledger-store",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "account_balance_fencing_token",
+            "actors": [
+              "redlock-worker-client-a",
+              "redlock-worker-client-b"
+            ],
+            "downstreamAction": "commit_balance_transfer"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "vault-ledger-store"
+      ]
+    },
+    {
+      "name": "vault-ledger-store",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

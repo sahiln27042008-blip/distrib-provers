@@ -1,0 +1,20 @@
+{
+  "repo": "ZenGardenDubai/ghali-ai-assistant",
+  "commit_sha": "5b3de97",
+  "audited_at": "2026-11-16T18:42:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "credit-balance-delivery-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Multi-Channel Messaging, Credit Balance Check-Before-Deduct Concurrency & Webhook Retry",
+      "verified_files": [
+        "convex/credits.ts:18-64",
+        "convex/messages.ts:556-561",
+        "convex/messages.ts:1063-1079",
+        "convex/messages.ts:1219-1235",
+        "convex/scheduledTasks.ts:240-250",
+        "convex/scheduledTasks.ts:545-555"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "repo": "novuhq/novu",
+  "commit_sha": "5630778",
+  "audited_at": "2026-11-15T19:59:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "notification-digest-window-duplicate",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Digest Orchestration & MergeOrCreateDigest Usecase",
+      "verified_files": [
+        "apps/worker/src/app/workflow/usecases/add-job/merge-or-create-digest.usecase.ts:161-177",
+        "apps/worker/src/app/workflow/usecases/add-job/merge-or-create-digest.usecase.ts:40-62",
+        "apps/worker/src/app/workflow/usecases/add-job/merge-or-create-digest.usecase.ts:82-124"
+      ]
+    }
+  ]
+}

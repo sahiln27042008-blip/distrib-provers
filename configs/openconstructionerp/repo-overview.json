@@ -1,0 +1,18 @@
+{
+  "repo": "datadrivenconstruction/OpenConstructionERP",
+  "commit_sha": "57d7e87",
+  "audited_at": "2026-11-16T01:46:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "escrow-payment-processor-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Developer Escrow Payment Schedule, Retainage Settlement & Outstanding Balance Concurrency",
+      "verified_files": [
+        "backend/app/modules/finance/service.py:1807-1845",
+        "backend/app/modules/finance/service.py:2414-2520",
+        "backend/app/modules/finance/payment_run_service.py:305-337",
+        "backend/app/modules/finance/ageing.py:1-60"
+      ]
+    }
+  ]
+}

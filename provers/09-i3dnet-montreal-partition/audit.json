@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-i3dnet-smartdc-montreal-partition-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "smartdc-coordination-leader",
+      "businessTarget": "smartdc-coordination-leader",
+      "description": "SATURATE affects smartdc-coordination-leader [vowel-2-1]"
+    }
+  ],
+  "failurePath": "smartdc-coordination-leader",
+  "verdictSummary": "BLOCKED: i3D.net Smartdc Montreal Network Partition & Standalone Recovery Deadlock [SATURATE on smartdc-coordination-leader]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 5.52620000000752,
+  "fingerprint": "85109ffdde138f131c44d16089ffd5b7ae93be232bba1caa1ae636158386b0bb",
+  "executiveSummary": "BLOCKED: i3D.net Smartdc Montreal Network Partition & Standalone Recovery Deadlock; native-lease-epoch-expiry, native-channel-cascade violated on smartdc-coordination-leader.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "smartdc-coordination-leader",
+      "businessTarget": "smartdc-coordination-leader",
+      "description": "SATURATE affects smartdc-coordination-leader [vowel-2-1]"
+    }
+  ]
+}

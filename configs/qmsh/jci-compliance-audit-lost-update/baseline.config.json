@@ -1,0 +1,76 @@
+{
+  "workflowId": "qmsh-jci-compliance-lost-update",
+  "workflowName": "QMSH Hospital JCI Accreditation Quality Audit & Compliance State Desynchronization",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "hospital-accreditation-auditor-portal",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "qmsh-audit-service",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "qmsh-audit-service"
+      ]
+    },
+    {
+      "name": "qmsh-audit-service",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 15000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "jci-compliance-standards-database",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "section_compliance_status_jci_ipsg",
+            "actors": [
+              "clinical-safety-auditor-1",
+              "hospital-operations-admin-2"
+            ],
+            "downstreamAction": "commit_compliance_state"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "jci-compliance-standards-database"
+      ]
+    },
+    {
+      "name": "jci-compliance-standards-database",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

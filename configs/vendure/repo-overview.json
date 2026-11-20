@@ -1,0 +1,19 @@
+{
+  "repo": "vendure-ecommerce/vendure",
+  "commit_sha": "d00adf9",
+  "audited_at": "2026-11-15T19:20:15+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "order-stock-allocation-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Order Placement, Coupon Validation & Stock Allocation Sagas",
+      "verified_files": [
+        "packages/core/src/service/services/order.service.ts:1545-1634",
+        "packages/core/src/service/services/stock-movement.service.ts:191-230",
+        "packages/core/src/service/services/stock-level.service.ts:43-73",
+        "packages/core/src/service/services/stock-level.service.ts:360-376"
+      ],
+      "source_pr": "https://github.com/vendurehq/vendure/pull/4660"
+    }
+  ]
+}

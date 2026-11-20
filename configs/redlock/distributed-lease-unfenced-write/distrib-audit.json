@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "redlock-unfenced-lease-write",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "account_balance_fencing_token",
+        "actors": [
+          "redlock-worker-client-a",
+          "redlock-worker-client-b"
+        ],
+        "downstreamAction": "commit_balance_transfer"
+      },
+      "targetName": "redlock-lease-client",
+      "businessTarget": "redlock-lease-client",
+      "description": "STALE_READ_WITHOUT_LOCK affects redlock-lease-client [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 126.8252,
+  "executiveSummary": "BLOCKED: Node Redlock Distributed Lease Expiry & Un-fenced Storage Mutation; native-stale-read-double-action violated on redlock-lease-client.",
+  "findings": []
+}

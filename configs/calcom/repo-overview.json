@@ -1,0 +1,17 @@
+{
+  "repo": "calcom/cal.com",
+  "commit_sha": "ae027bb",
+  "audited_at": "2026-11-15T19:47:47+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "booking-slot-concurrency-double-booking",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Handle New Booking & Slot Availability Reservation Sagas",
+      "verified_files": [
+        "packages/features/bookings/lib/handleNewBooking/ensureAvailableUsers.ts:57-85",
+        "packages/features/bookings/lib/handleNewBooking/ensureAvailableUsers.ts:242-257",
+        "packages/features/bookings/lib/handleNewBooking/createBooking.ts:139-148"
+      ]
+    }
+  ]
+}

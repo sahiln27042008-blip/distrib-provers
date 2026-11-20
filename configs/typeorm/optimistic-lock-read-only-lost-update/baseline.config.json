@@ -1,0 +1,76 @@
+{
+  "workflowId": "typeorm-optimistic-lock-lost-update",
+  "workflowName": "TypeORM SelectQueryBuilder Optimistic Lock Read-Only Assertion & Lost Update",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "typeorm-http-api-handler",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "typeorm-query-builder",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "typeorm-query-builder"
+      ]
+    },
+    {
+      "name": "typeorm-query-builder",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "postgres-relational-storage",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "entity_version_counter",
+            "actors": [
+              "concurrent-typeorm-transaction-1",
+              "concurrent-typeorm-transaction-2"
+            ],
+            "downstreamAction": "commit_versioned_mutation"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "postgres-relational-storage"
+      ]
+    },
+    {
+      "name": "postgres-relational-storage",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

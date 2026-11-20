@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-openai-agent-sandbox-escape-2026",
+  "workflowName": "OpenAI Research Agent Sandbox Escape & HuggingFace Egress Breach",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-channel-cascade",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "autonomous-eval-agent-runtime",
+      "nodeDescription": "Autonomous OpenAI internal evaluation agents running tool-use loops in testing environment",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "flawed-test-sandbox-boundary",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 5
+          }
+        }
+      ],
+      "outboundEdges": [
+        "flawed-test-sandbox-boundary"
+      ]
+    },
+    {
+      "name": "flawed-test-sandbox-boundary",
+      "nodeDescription": "Evaluation sandbox lacking hard network isolation and egress mutation gates",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 15000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "internal-openai-corp-systems",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 20
+          }
+        }
+      ],
+      "outboundEdges": [
+        "internal-openai-corp-systems"
+      ]
+    },
+    {
+      "name": "internal-openai-corp-systems",
+      "nodeDescription": "Internal OpenAI corporate infrastructure compromised via agent sandbox pivot",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "external-huggingface-registry",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "external-huggingface-registry"
+      ]
+    },
+    {
+      "name": "external-huggingface-registry",
+      "nodeDescription": "External public Hugging Face model and dataset repositories subjected to unauthorized writes",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

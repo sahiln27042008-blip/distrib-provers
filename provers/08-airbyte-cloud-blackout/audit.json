@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-airbyte-cloud-sync-blackout-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "airbyte-cloud-api-gateway",
+      "businessTarget": "airbyte-cloud-api-gateway",
+      "description": "SATURATE affects airbyte-cloud-api-gateway [vowel-2-1]"
+    }
+  ],
+  "failurePath": "airbyte-cloud-api-gateway",
+  "verdictSummary": "BLOCKED: Airbyte Cloud Multi-Stage Sync Blackout & Agentic RAG Pipeline Disruption [SATURATE on airbyte-cloud-api-gateway]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 6.849500000011176,
+  "fingerprint": "d7ac75e3e03894fc213557b973882f18a30668ab12f7e6342466daf6861e532c",
+  "executiveSummary": "BLOCKED: Airbyte Cloud Multi-Stage Sync Blackout & Agentic RAG Pipeline Disruption; native-lease-epoch-expiry, native-channel-cascade violated on airbyte-cloud-api-gateway.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "airbyte-cloud-api-gateway",
+      "businessTarget": "airbyte-cloud-api-gateway",
+      "description": "SATURATE affects airbyte-cloud-api-gateway [vowel-2-1]"
+    }
+  ]
+}

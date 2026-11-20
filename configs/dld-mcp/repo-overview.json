@@ -1,0 +1,18 @@
+{
+  "repo": "level09/dld-mcp",
+  "commit_sha": "80352dc",
+  "audited_at": "2026-11-16T01:24:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "data-query-stale-cache-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Dubai Land Department (DLD) Live Query Engine, OfferBrief Upstream & Title Valuation Cache",
+      "verified_files": [
+        "src/dld_mcp/server.py:17-19",
+        "src/dld_mcp/server.py:32-62",
+        "src/dld_mcp/server.py:105-148",
+        "README.md:54-79"
+      ]
+    }
+  ]
+}

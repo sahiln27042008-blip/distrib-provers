@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "qmsh-jci-compliance-lost-update",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "section_compliance_status_jci_ipsg",
+        "actors": [
+          "clinical-safety-auditor-1",
+          "hospital-operations-admin-2"
+        ],
+        "downstreamAction": "commit_compliance_state"
+      },
+      "targetName": "qmsh-audit-service",
+      "businessTarget": "qmsh-audit-service",
+      "description": "STALE_READ_WITHOUT_LOCK affects qmsh-audit-service [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 246.6151,
+  "executiveSummary": "BLOCKED: QMSH Hospital JCI Accreditation Quality Audit & Compliance State Desynchronization; native-stale-read-double-action violated on qmsh-audit-service.",
+  "findings": []
+}

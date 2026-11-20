@@ -1,0 +1,61 @@
+{
+  "workflow_slug": "schedule-cron-dlq-strand",
+  "repo": "triggerdotdev/trigger.dev",
+  "commit_sha": "2fbd5c7",
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "executions": 4,
+  "max_depth_explored": 3,
+  "seed": 42,
+  "violated_invariant": "Every scheduled cron tick must trigger at most once and guarantee forward progress of the recurrence chain, even under transient database or network partitions.",
+  "violated_mechanism": "C1_DELAY: Latency exceeded node timeout or workflow deadline",
+  "observed_failure": "End-to-end time 30100ms exceeded invariant threshold 30000ms",
+  "shortest_counterexample": [
+    {
+      "kind": "DELAY",
+      "targetId": "edge-dequeue-to-trigger",
+      "value": 30000,
+      "label": "DELAY(30000ms) on edge-dequeue-to-trigger"
+    }
+  ],
+  "counterexample_trace": [
+    {
+      "edgeId": "edge-dequeue-to-trigger",
+      "elapsedMs": 30050,
+      "outcome": "DELIVERED"
+    },
+    {
+      "edgeId": "edge-trigger-to-pg",
+      "elapsedMs": 20,
+      "outcome": "DELIVERED"
+    },
+    {
+      "edgeId": "edge-trigger-to-next-tick",
+      "elapsedMs": 30,
+      "outcome": "DELIVERED"
+    }
+  ],
+  "verified_files": [
+    {
+      "path": "internal-packages/schedule-engine/src/engine/workerCatalog.ts",
+      "lines": "18-23",
+      "code_fact": "Worker queue config assigns visibilityTimeoutMs: 60000 and retry: { maxAttempts: 5 } to schedule.triggerScheduledTask, sending unhandled errors to DLQ after 5 attempts (~15-30 seconds)."
+    },
+    {
+      "path": "internal-packages/schedule-engine/src/engine/index.ts",
+      "lines": "368-376",
+      "code_fact": "#handleTriggerScheduledTaskJob hardcodes finalAttempt: false ('TODO: implement retry logic'), disabling terminal attempt handling on subsequent retries."
+    },
+    {
+      "path": "apps/webapp/app/v3/scheduleEngine.server.ts",
+      "lines": "111-135",
+      "code_fact": "onTriggerScheduledTask invokes triggerService.call without specifying an idempotencyKey in the body or options."
+    },
+    {
+      "path": "internal-packages/schedule-engine/src/engine/index.ts",
+      "lines": "713-734",
+      "code_fact": "triggerScheduledTask executes onTriggerScheduledTask before calling registerNextTaskScheduleInstance; if registration fails, it checks if (!params.finalAttempt) throw nextRunError, triggering a worker retry of the already-executed trigger."
+    }
+  ],
+  "safety_invariant": "Every scheduled cron tick must trigger at most once and guarantee forward progress of the recurrence chain, even under transient database or network partitions."
+}

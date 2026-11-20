@@ -1,0 +1,51 @@
+{
+  "audit": {
+    "success": true,
+    "verdict": "BLOCKED",
+    "status": "FAILURE_FOUND",
+    "scenarioId": "wf-enterprise-fcc-license-manageme-457",
+    "shortestDepth": 1,
+    "minimalCounterexample": [
+      {
+        "consonantKind": "DUPLICATE",
+        "targetVowelId": "channel-1-2",
+        "params": {
+          "count": 2
+        },
+        "targetName": "applicant-certification-ingress → lms-application-registry",
+        "businessTarget": "applicant-certification-ingress → lms-application-registry",
+        "description": "DUPLICATE affects applicant-certification-ingress → lms-application-registry [channel-1-2]"
+      }
+    ],
+    "failurePath": "applicant-certification-ingress → lms-application-registry",
+    "verdictSummary": "BLOCKED: Enterprise Agent Workflow [DUPLICATE on applicant-certification-ingress → lms-application-registry]",
+    "violatedInvariants": [
+      "r04-network-idempotency"
+    ],
+    "evaluationsCount": 12,
+    "durationMs": 35.0656,
+    "fingerprint": "4983d9556caaa9af94b6a697105388d54b1b847158a0bef8936941334a257724"
+  },
+  "combinedAblationVerify": {
+    "success": true,
+    "verdict": "APPROVED",
+    "verdictSummary": "APPROVED: Enterprise Agent Workflow - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "status": "NO_FAILURE_WITHIN_BOUND",
+    "scenarioId": "wf-enterprise-fcc-license-manageme-457",
+    "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "ablations": [
+      "enforce_idempotency",
+      "zero_hold_lease",
+      "fencing_token_enabled",
+      "shed_at_threshold"
+    ],
+    "immuneUpToDepth": 2,
+    "regressionCheck": "PASSED",
+    "shortestDepth": null,
+    "minimalCounterexample": [],
+    "failurePath": "",
+    "violatedInvariants": [],
+    "evaluationsCount": 813,
+    "durationMs": 1591.7958
+  }
+}

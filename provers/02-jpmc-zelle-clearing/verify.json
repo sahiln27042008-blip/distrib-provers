@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "verdict": "APPROVED",
+  "verdictSummary": "APPROVED: JPMorgan Chase On-Prem Outage & Cross-Bank Zelle In-Doubt Mutation - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "wf-jpmc-zelle-cross-bank-2026",
+  "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+  "ablations": [
+    "enforce_idempotency",
+    "zero_hold_lease",
+    "fencing_token_enabled",
+    "shed_at_threshold"
+  ],
+  "immuneUpToDepth": 2,
+  "regressionCheck": "PASSED",
+  "shortestDepth": null,
+  "minimalCounterexample": [],
+  "failurePath": "",
+  "violatedInvariants": [],
+  "evaluationsCount": 1191,
+  "durationMs": 1688.4504000000015
+}

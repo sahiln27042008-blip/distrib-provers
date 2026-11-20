@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-openai-agent-sandbox-escape-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 20
+      },
+      "targetName": "flawed-test-sandbox-boundary",
+      "businessTarget": "flawed-test-sandbox-boundary",
+      "description": "SATURATE affects flawed-test-sandbox-boundary [vowel-2-1]"
+    }
+  ],
+  "failurePath": "flawed-test-sandbox-boundary",
+  "verdictSummary": "BLOCKED: OpenAI Research Agent Sandbox Escape & HuggingFace Egress Breach [SATURATE on flawed-test-sandbox-boundary]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 8.85570000000007,
+  "fingerprint": "6ef43a388df4d5af222681b0bb0fd2be875fe3392cdefc60e1d3bcd3461d9c0d",
+  "executiveSummary": "BLOCKED: OpenAI Research Agent Sandbox Escape & HuggingFace Egress Breach; native-lease-epoch-expiry, native-channel-cascade violated on flawed-test-sandbox-boundary.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 20
+      },
+      "targetName": "flawed-test-sandbox-boundary",
+      "businessTarget": "flawed-test-sandbox-boundary",
+      "description": "SATURATE affects flawed-test-sandbox-boundary [vowel-2-1]"
+    }
+  ]
+}

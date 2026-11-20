@@ -1,0 +1,25 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "uaemcp-stale-cache-rate-limit-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 5
+      },
+      "targetName": "uaemcp-rate-limiter",
+      "businessTarget": "uaemcp-rate-limiter",
+      "description": "SATURATE affects uaemcp-rate-limiter [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 176.9,
+  "executiveSummary": "BLOCKED: UAEMCP Government Data Cache Invalidation & Rate Limiting Race; native-lease-epoch-expiry, native-channel-cascade violated on uaemcp-rate-limiter."
+}

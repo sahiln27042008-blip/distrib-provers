@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "novu-digest-window-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "active_digest_master_job_id",
+        "actors": [
+          "concurrent-trigger-event-1",
+          "concurrent-trigger-event-2"
+        ],
+        "downstreamAction": "create_digest_master"
+      },
+      "targetName": "digest-coordinator-worker",
+      "businessTarget": "digest-coordinator-worker",
+      "description": "STALE_READ_WITHOUT_LOCK affects digest-coordinator-worker [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 168.41,
+  "executiveSummary": "BLOCKED: Novu Notification Digest Window Race & Duplicate Master Creation; native-stale-read-double-action violated on digest-coordinator-worker.",
+  "findings": []
+}

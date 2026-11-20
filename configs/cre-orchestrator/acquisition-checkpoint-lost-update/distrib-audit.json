@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "cre-acquisition-checkpoint-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "deal_due_diligence_verdict",
+        "actors": [
+          "legal-title-review-agent",
+          "financial-model-builder-agent"
+        ],
+        "downstreamAction": "commit_deal_verdict"
+      },
+      "targetName": "multi-agent-deal-coordinator",
+      "businessTarget": "multi-agent-deal-coordinator",
+      "description": "STALE_READ_WITHOUT_LOCK affects multi-agent-deal-coordinator [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 247.0087,
+  "executiveSummary": "BLOCKED: Commercial Real Estate Acquisition Multi-Agent Due-Diligence & Master Checkpoint Race; native-stale-read-double-action violated on multi-agent-deal-coordinator.",
+  "findings": []
+}

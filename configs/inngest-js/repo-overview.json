@@ -1,0 +1,19 @@
+{
+  "repo": "inngest/inngest-js",
+  "commit_sha": "2caf225",
+  "audited_at": "2026-11-15T17:17:40+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "step-sleep-timeout-collapse",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Inngest SDK Step Tools & Duration Serialization",
+      "verified_files": [
+        "packages/inngest/src/helpers/strings.ts:132-166",
+        "packages/inngest/src/helpers/duration.ts:15-38",
+        "packages/inngest/src/components/InngestStepTools.ts:1070-1084",
+        "packages/inngest/src/components/InngestStepTools.ts:940-946"
+      ],
+      "source_issue": "https://github.com/inngest/inngest-js/issues/1886"
+    }
+  ]
+}

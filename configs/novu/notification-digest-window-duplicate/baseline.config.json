@@ -1,0 +1,76 @@
+{
+  "workflowId": "novu-digest-window-race",
+  "workflowName": "Novu Notification Digest Window Race & Duplicate Master Creation",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "notification-trigger-producer",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "digest-coordinator-worker",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "digest-coordinator-worker"
+      ]
+    },
+    {
+      "name": "digest-coordinator-worker",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "message-dispatch-provider",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "active_digest_master_job_id",
+            "actors": [
+              "concurrent-trigger-event-1",
+              "concurrent-trigger-event-2"
+            ],
+            "downstreamAction": "create_digest_master"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "message-dispatch-provider"
+      ]
+    },
+    {
+      "name": "message-dispatch-provider",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-m365-pir-bulkhead-cascade",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 12
+      },
+      "targetName": "primary-gateway-tier-highcore",
+      "businessTarget": "primary-gateway-tier-highcore",
+      "description": "SATURATE affects primary-gateway-tier-highcore [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 301.2334,
+  "executiveSummary": "BLOCKED: Microsoft Exchange Online PIR Bulkhead Failure & High-Core Lock Contention; native-lease-epoch-expiry, native-channel-cascade violated on primary-gateway-tier-highcore.",
+  "findings": []
+}

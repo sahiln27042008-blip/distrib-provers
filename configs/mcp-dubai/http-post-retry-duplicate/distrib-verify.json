@@ -1,0 +1,14 @@
+{
+  "verdict": "APPROVED",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "mcp-dubai-http-post-retry-duplicate",
+  "appliedAblations": [
+    "zero_hold_lease",
+    "enforce_idempotency",
+    "shed_at_threshold"
+  ],
+  "violatedInvariants": [],
+  "minimalCounterexample": [],
+  "evaluationsCount": 1807,
+  "durationMs": 7141.19
+}

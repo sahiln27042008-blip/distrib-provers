@@ -1,0 +1,29 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "ghali-credit-check-deduct-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "user_credit_balance",
+        "actors": [
+          "concurrent-user-message-1",
+          "concurrent-user-message-2"
+        ],
+        "downstreamAction": "deduct_credit"
+      },
+      "targetName": "credit-check-preflight",
+      "businessTarget": "credit-check-preflight",
+      "description": "STALE_READ_WITHOUT_LOCK affects credit-check-preflight [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 321.7,
+  "executiveSummary": "BLOCKED: Ghali AI Assistant Concurrency Race on Check-Then-Act Credit Deduction; native-stale-read-double-action violated on credit-check-preflight."
+}

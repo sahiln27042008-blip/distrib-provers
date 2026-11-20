@@ -1,0 +1,137 @@
+{
+  "repo": "triggerdotdev/trigger.dev",
+  "commit_sha": "2fbd5c7",
+  "workflow_slug": "schedule-cron-dlq-strand",
+  "source_issue_or_pr": "https://github.com/triggerdotdev/trigger.dev/issues/5120",
+  "verified_files": [
+    {
+      "path": "internal-packages/schedule-engine/src/engine/workerCatalog.ts",
+      "lines": "18-23",
+      "code_fact": "Worker queue config patched with extended retry budget (maxAttempts: 15, maxTimeoutInMs: 60000) allowing 9-10 minutes of outage resilience."
+    },
+    {
+      "path": "internal-packages/schedule-engine/src/engine/index.ts",
+      "lines": "368-376",
+      "code_fact": "#handleTriggerScheduledTaskJob passes actual finalAttempt: job.attempt >= job.maxAttempts to triggerScheduledTask."
+    },
+    {
+      "path": "apps/webapp/app/v3/scheduleEngine.server.ts",
+      "lines": "111-135",
+      "code_fact": "onTriggerScheduledTask supplies options: { idempotencyKey: `${scheduleInstanceId}:${exactScheduleTime.toISOString()}` } to triggerService.call, enforcing atomic deduplication."
+    },
+    {
+      "path": "internal-packages/schedule-engine/src/engine/index.ts",
+      "lines": "713-734",
+      "code_fact": "Self-healing periodic background reconciliation (recoverSchedulesInEnvironment) scans active schedules on a 60s timer using enqueueOnce, automatically restoring dropped chains."
+    }
+  ],
+  "plain_english_spec": "Patched schedule engine models deterministic idempotency keys (${scheduleInstanceId}:${timestamp}) on all trigger dispatches, extended worker retry budgets, and an automatic self-healing background reconciliation loop that revives dead-lettered schedule chains without operator intervention.",
+  "primitives": {
+    "REGISTER": {
+      "owner": "PostgreSQL (TaskScheduleInstance & TaskRun)",
+      "uniqueness_constraint": "Enforced via composite idempotency key (${scheduleInstanceId}:${timestamp})",
+      "durable": true,
+      "idempotency_enforced": true
+    },
+    "LOG": {
+      "audit_record": "Redis schedule worker queue and DLQ with periodic reconciler sweep",
+      "buffer_capacity": 5000
+    },
+    "LEASE": {
+      "resource": "Redis worker job lease with self-healing heartbeat",
+      "capacity_or_ttl_ms": 60000,
+      "max_attempts": 15
+    },
+    "CHANNEL": {
+      "boundary": "Internal IPC: Redis Worker -> ScheduleEngine -> TriggerTaskService -> Postgres",
+      "ack_behavior": "Idempotent delivery with deduplicated trigger dispatch",
+      "timeout_ms": 60000
+    },
+    "TIMING": {
+      "timeout_ms": 60000,
+      "max_wait_or_processing_ms": 90000
+    },
+    "OMISSION": {
+      "fault_trigger": "Transient PostgreSQL or TCP proxy drop handled by extended backoff and periodic background reconciliation"
+    },
+    "DUPLICATION": {
+      "retry_behavior": "Retries safely absorb failures without duplicate task creation due to deterministic idempotency key",
+      "reuses_idempotency_key": true
+    },
+    "SATURATE": {
+      "bottleneck": "Eliminated via self-healing enqueueOnce sweep"
+    },
+    "CRASH_AMNESIA": {
+      "volatile_state_lost": "Prevented: missing pending Redis items reconstructed from durable Postgres instance records"
+    },
+    "BYZANTINE": {
+      "conflicting_signal": "Resolved: idempotent register deduplication rejects replay runs"
+    }
+  },
+  "safety_invariant": "Every scheduled cron tick must trigger at most once and guarantee forward progress of the recurrence chain, even under transient database or network partitions.",
+  "workflow_graph": {
+    "nodes": [
+      {
+        "id": "node-worker-lease",
+        "name": "Schedule Worker Queue (Patched)",
+        "role": "Redis Queue Worker / Lease Gate with Backoff",
+        "substrate": "V3_LEASE",
+        "capacity": 15,
+        "timeoutMs": 60000,
+        "evidence": "workerCatalog.ts: extended retry budget"
+      },
+      {
+        "id": "node-task-trigger",
+        "name": "Task Trigger Service (Idempotent)",
+        "role": "Idempotent Execution Dispatch Channel",
+        "substrate": "V4_CHANNEL",
+        "timeoutMs": 60000,
+        "evidence": "scheduleEngine.server.ts: idempotencyKey added"
+      },
+      {
+        "id": "node-state-register",
+        "name": "Postgres Task Run Register",
+        "role": "Durable State Owner with Idempotency Key Constraint",
+        "substrate": "V1_CELL",
+        "durable": true,
+        "evidence": "apps/webapp/app/v3/scheduleEngine.server.ts"
+      },
+      {
+        "id": "node-reconciler",
+        "name": "Self-Healing Schedule Reconciler",
+        "role": "Periodic Background Recovery Daemon",
+        "substrate": "V1_CELL",
+        "durable": true,
+        "timeoutMs": 60000,
+        "evidence": "scheduleRecovery.server.ts: periodic recoverSchedulesInEnvironment"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-dequeue-to-trigger",
+        "source": "node-worker-lease",
+        "target": "node-task-trigger",
+        "latencyMs": 50,
+        "idempotent": true,
+        "evidence": "scheduleEngine.server.ts: deterministic key passes through"
+      },
+      {
+        "id": "edge-trigger-to-pg",
+        "source": "node-task-trigger",
+        "target": "node-state-register",
+        "latencyMs": 20,
+        "idempotent": true,
+        "evidence": "triggerTask.server.ts: IdempotencyKeyConcern deduplicates run"
+      },
+      {
+        "id": "edge-reconcile-sweep",
+        "source": "node-reconciler",
+        "target": "node-worker-lease",
+        "latencyMs": 100,
+        "idempotent": true,
+        "evidence": "scheduleRecovery: enqueueOnce ensures zero duplicate jobs"
+      }
+    ],
+    "maxEndToEndMs": 90000
+  }
+}

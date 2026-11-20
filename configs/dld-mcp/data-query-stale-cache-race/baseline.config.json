@@ -1,0 +1,76 @@
+{
+  "workflowId": "dld-mcp-data-query-race",
+  "workflowName": "Dubai Land Department (DLD) Live Query Engine & Property Valuation Checkpoint Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "institutional-valuation-agent",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dld-mcp-query-engine",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dld-mcp-query-engine"
+      ]
+    },
+    {
+      "name": "dld-mcp-query-engine",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dld-title-deed-registry",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "dld_property_transaction_ledger",
+            "actors": [
+              "dld-title-deed-registry",
+              "dld-mcp-query-engine"
+            ],
+            "downstreamAction": "emit_underwriting_valuation"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dld-title-deed-registry"
+      ]
+    },
+    {
+      "name": "dld-title-deed-registry",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

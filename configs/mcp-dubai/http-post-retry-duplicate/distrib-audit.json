@@ -1,0 +1,24 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "mcp-dubai-http-post-retry-duplicate",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "DUPLICATE",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "count": 2
+      },
+      "targetName": "http-client-retrier → dubai-pulse-oauth-service",
+      "businessTarget": "http-client-retrier → dubai-pulse-oauth-service",
+      "description": "DUPLICATE affects http-client-retrier → dubai-pulse-oauth-service [vowel-3-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 235.4,
+  "executiveSummary": "BLOCKED: MCP-Dubai HTTP Client Tenacity POST Retry & Duplicate Upstream Execution; native-network-idempotency violated on http-client-retrier → dubai-pulse-oauth-service."
+}

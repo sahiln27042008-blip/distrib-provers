@@ -1,0 +1,28 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "marley-medication-order-duplicate",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-2-2",
+      "params": {
+        "strippedHeader": "medication_request_id",
+        "intermediary": "make_medication_request",
+        "newReceiverKey": "medication_order_attempt_2"
+      },
+      "targetName": "encounter-medication-generator → hospital-pharmacy-dispense-service",
+      "businessTarget": "encounter-medication-generator → hospital-pharmacy-dispense-service",
+      "description": "STRIP_ON_RETRY affects encounter-medication-generator → hospital-pharmacy-dispense-service [vowel-2-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 402.5431,
+  "executiveSummary": "BLOCKED: Earthians Marley EHR Patient Encounter Submit & Duplicate Medication Request Spawning; native-network-idempotency, r04-network-idempotency violated on encounter-medication-generator → hospital-pharmacy-dispense-service.",
+  "findings": []
+}

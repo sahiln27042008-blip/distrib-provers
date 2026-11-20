@@ -1,0 +1,108 @@
+{
+  "workflowId": "wf-autonomous-agent-unfenced-mutation",
+  "workflowName": "Autonomous Agent Mutation Gate & Byzantine Verification Divergence",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "agent-planner-ingress",
+      "nodeDescription": "Autonomous AI coding and migration agent executing schema cleanup and migrations",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "mutation-execution-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "mutation-execution-gateway"
+      ]
+    },
+    {
+      "name": "mutation-execution-gateway",
+      "nodeDescription": "Execution runtime with inherited cloud credentials and missing pre-execution mutation gates",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "production-datastore",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "production-datastore"
+      ]
+    },
+    {
+      "name": "production-datastore",
+      "nodeDescription": "Primary production relational database hosting 87 core production tables",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "backup-recovery-plane",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 5
+          }
+        }
+      ],
+      "outboundEdges": [
+        "backup-recovery-plane"
+      ]
+    },
+    {
+      "name": "backup-recovery-plane",
+      "nodeDescription": "S3 snapshot and disaster recovery storage sharing the same reachable IAM credential plane",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

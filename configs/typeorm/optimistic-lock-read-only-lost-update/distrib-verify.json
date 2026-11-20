@@ -1,0 +1,15 @@
+{
+  "verdict": "APPROVED",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "typeorm-optimistic-lock-lost-update",
+  "appliedAblations": [
+    "zero_hold_lease",
+    "enforce_idempotency",
+    "shed_at_threshold"
+  ],
+  "violatedInvariants": [],
+  "minimalCounterexample": [],
+  "evaluationsCount": 507,
+  "durationMs": 831.967,
+  "findings": []
+}

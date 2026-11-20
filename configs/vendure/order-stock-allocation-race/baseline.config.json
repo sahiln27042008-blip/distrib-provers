@@ -1,0 +1,76 @@
+{
+  "workflowId": "vendure-stock-allocation-race",
+  "workflowName": "Vendure Order Placement Stock Allocation & Coupon Cap Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "checkout-saga-coordinator",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "stock-allocation-service",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "stock-allocation-service"
+      ]
+    },
+    {
+      "name": "stock-allocation-service",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "inventory-ledger-db",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "stock_allocated_counter",
+            "actors": [
+              "concurrent-checkout-A",
+              "concurrent-checkout-B"
+            ],
+            "downstreamAction": "allocate_stock"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "inventory-ledger-db"
+      ]
+    },
+    {
+      "name": "inventory-ledger-db",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

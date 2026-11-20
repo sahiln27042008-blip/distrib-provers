@@ -1,0 +1,28 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "trigger-schedule-cron-strand",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STRIP_ON_RETRY",
+      "targetVowelId": "vowel-1-2",
+      "params": {
+        "strippedHeader": "idempotencyKey",
+        "intermediary": "redis-worker-retry",
+        "newReceiverKey": "run_attempt_2"
+      },
+      "targetName": "schedule-worker-queue → trigger-task-service",
+      "businessTarget": "schedule-worker-queue → trigger-task-service",
+      "description": "STRIP_ON_RETRY affects schedule-worker-queue → trigger-task-service [vowel-1-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 83.53,
+  "executiveSummary": "BLOCKED: Trigger.dev Schedule Engine Recurrence & Dead-Letter Chaining; native-network-idempotency, r04-network-idempotency violated on schedule-worker-queue → trigger-task-service.",
+  "findings": []
+}

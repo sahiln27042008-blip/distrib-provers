@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-ai-agent-retry-storm-toctou",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 20
+      },
+      "targetName": "shared-budget-ledger",
+      "businessTarget": "shared-budget-ledger",
+      "description": "SATURATE affects shared-budget-ledger [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 80.0886,
+  "executiveSummary": "BLOCKED: AI Agent Multi-Layer Retry Storm & TOCTOU Budget Overrun; native-lease-epoch-expiry, native-channel-cascade violated on shared-budget-ledger.",
+  "findings": []
+}

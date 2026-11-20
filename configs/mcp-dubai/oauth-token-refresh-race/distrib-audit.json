@@ -1,0 +1,25 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "mcp-dubai-oauth-post-retry-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "DUPLICATE",
+      "targetVowelId": "vowel-2-2",
+      "params": {
+        "count": 2
+      },
+      "targetName": "mcp-dubai-gateway → dubai-pulse-and-rta-api",
+      "businessTarget": "mcp-dubai-gateway → dubai-pulse-and-rta-api",
+      "description": "DUPLICATE affects mcp-dubai-gateway → dubai-pulse-and-rta-api [vowel-2-2]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 76.14230000000003,
+  "executiveSummary": "BLOCKED: Dubai Pulse OAuth2 Token Refresh, Shared HttpClient POST Retry & RTA Booking Concurrency; r04-network-idempotency violated on mcp-dubai-gateway → dubai-pulse-and-rta-api.",
+  "findings": []
+}

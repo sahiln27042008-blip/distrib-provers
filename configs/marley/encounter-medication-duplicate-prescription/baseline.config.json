@@ -1,0 +1,76 @@
+{
+  "workflowId": "marley-medication-order-duplicate",
+  "workflowName": "Earthians Marley EHR Patient Encounter Submit & Duplicate Medication Request Spawning",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "clinical-emr-encounter-submitter",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "encounter-medication-generator",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "encounter-medication-generator"
+      ]
+    },
+    {
+      "name": "encounter-medication-generator",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "hospital-pharmacy-dispense-service",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false,
+            "senderKey": "patient_encounter_enc_1001_drug_1",
+            "receiverDedupKey": "medication_order_attempt_1"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "medication_request_id",
+            "intermediary": "make_medication_request",
+            "newReceiverKey": "medication_order_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "hospital-pharmacy-dispense-service"
+      ]
+    },
+    {
+      "name": "hospital-pharmacy-dispense-service",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

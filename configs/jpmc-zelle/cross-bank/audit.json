@@ -1,0 +1,25 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-jpmc-zelle-cross-bank-2026",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SEVER",
+      "targetVowelId": "vowel-3-2",
+      "params": {
+        "phase": "POST_COMMIT"
+      },
+      "targetName": "chase-onprem-core-banking → interbank-settlement-ledger",
+      "businessTarget": "chase-onprem-core-banking → interbank-settlement-ledger",
+      "description": "SEVER affects chase-onprem-core-banking → interbank-settlement-ledger [vowel-3-2]"
+    }
+  ],
+  "evaluationsCount": 4,
+  "durationMs": 549.35,
+  "executiveSummary": "BLOCKED: JPMorgan Chase On-Prem Outage & Cross-Bank Zelle In-Doubt Mutation; native-network-idempotency, r04-network-idempotency violated on chase-onprem-core-banking → interbank-settlement-ledger."
+}

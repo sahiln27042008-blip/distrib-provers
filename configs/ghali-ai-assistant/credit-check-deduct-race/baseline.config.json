@@ -1,0 +1,123 @@
+{
+  "workflowId": "ghali-credit-check-deduct-race",
+  "workflowName": "Ghali AI Assistant Concurrency Race on Check-Then-Act Credit Deduction",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "user-messaging-gateway",
+      "nodeDescription": "Incoming WhatsApp and Telegram webhook receiver in Dubai",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "credit-check-preflight",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "credit-check-preflight"
+      ]
+    },
+    {
+      "name": "credit-check-preflight",
+      "nodeDescription": "Preflight credit availability query (convex/messages.ts:556-560)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "ai-inference-orchestrator",
+            "timeoutMs": 60000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "user_credit_balance",
+            "actors": [
+              "concurrent-user-message-1",
+              "concurrent-user-message-2"
+            ],
+            "downstreamAction": "deduct_credit"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "ai-inference-orchestrator"
+      ]
+    },
+    {
+      "name": "ai-inference-orchestrator",
+      "nodeDescription": "Async LLM inference execution with external tool calls (convex/messages.ts:1050-1200)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 45000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "credit-deduction-mutator",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "credit-deduction-mutator"
+      ]
+    },
+    {
+      "name": "credit-deduction-mutator",
+      "nodeDescription": "Post-response credit decrement mutation (convex/credits.ts:52-65)",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "user-credit-ledger",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "user-credit-ledger"
+      ]
+    },
+    {
+      "name": "user-credit-ledger",
+      "nodeDescription": "Durable user document in Convex database",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

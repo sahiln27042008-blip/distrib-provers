@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "ghali-credit-balance-delivery-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "user_available_credits",
+        "actors": [
+          "whatsapp-webhook-gateway",
+          "ghali-agent-orchestrator"
+        ],
+        "downstreamAction": "dispatch_expensive_ai_inference"
+      },
+      "targetName": "ghali-agent-orchestrator",
+      "businessTarget": "ghali-agent-orchestrator",
+      "description": "STALE_READ_WITHOUT_LOCK affects ghali-agent-orchestrator [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 153.5817,
+  "executiveSummary": "BLOCKED: Ghali AI Assistant Multi-Channel Messaging, Credit Reservation & Webhook Retry Concurrency; native-stale-read-double-action violated on ghali-agent-orchestrator.",
+  "findings": []
+}

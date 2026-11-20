@@ -1,0 +1,76 @@
+{
+  "workflowId": "openconstructionerp-escrow-payment-processor",
+  "workflowName": "OpenConstructionERP Developer Escrow Payment Processing & Outstanding Balance Roll-up",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "buyer-payment-webhook",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "escrow-payment-processor",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "escrow-payment-processor"
+      ]
+    },
+    {
+      "name": "escrow-payment-processor",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 25000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "escrow-ledger-store",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "developer_escrow_outstanding_balance",
+            "actors": [
+              "buyer-payment-webhook",
+              "escrow-payment-processor"
+            ],
+            "downstreamAction": "settle_escrow_installment"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "escrow-ledger-store"
+      ]
+    },
+    {
+      "name": "escrow-ledger-store",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

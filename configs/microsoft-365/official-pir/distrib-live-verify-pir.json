@@ -1,0 +1,61 @@
+{
+  "audit": {
+    "success": true,
+    "verdict": "BLOCKED",
+    "status": "FAILURE_FOUND",
+    "scenarioId": "wf-exchange-shared-gateway-nov2026",
+    "shortestDepth": 1,
+    "minimalCounterexample": [
+      {
+        "consonantKind": "DUPLICATE",
+        "targetVowelId": "channel-3-4",
+        "params": { "count": 2 },
+        "targetName": "bulkhead-isolation-controller → exchange-backend-cluster",
+        "businessTarget": "bulkhead-isolation-controller → exchange-backend-cluster",
+        "description": "DUPLICATE affects bulkhead-isolation-controller → exchange-backend-cluster [channel-3-4]"
+      }
+    ],
+    "failurePath": "bulkhead-isolation-controller → exchange-backend-cluster",
+    "verdictSummary": "BLOCKED: Exchange Online Shared Gateway Failover and Thundering-Herd Collapse - Nov 2026 [DUPLICATE on bulkhead-isolation-controller → exchange-backend-cluster]",
+    "violatedInvariants": ["r04-network-idempotency"],
+    "evaluationsCount": 12,
+    "durationMs": 54.2807,
+    "fingerprint": "bc455f43423ade12bdb5d275259883f8b72f0b07320315e7b33c3238c8d95991"
+  },
+  "latencyCliff": {
+    "success": true,
+    "status": "CLIFF_FOUND",
+    "scenarioId": "wf-exchange-shared-gateway-nov2026",
+    "targetChannel": "channel-1-2",
+    "testedRange": { "low": 0, "high": 60000 },
+    "cliffMs": 10006.5,
+    "safeMs": 9992,
+    "collapseMs": 10021,
+    "evaluationsCount": 16,
+    "iterations": 11,
+    "tolerance": 50,
+    "durationMs": 24.8856
+  },
+  "combinedAblationVerify": {
+    "success": true,
+    "verdict": "APPROVED",
+    "verdictSummary": "APPROVED: Exchange Online Shared Gateway Failover and Thundering-Herd Collapse - Nov 2026 - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "status": "NO_FAILURE_WITHIN_BOUND",
+    "scenarioId": "wf-exchange-shared-gateway-nov2026",
+    "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "ablations": [
+      "enforce_idempotency",
+      "zero_hold_lease",
+      "fencing_token_enabled",
+      "shed_at_threshold"
+    ],
+    "immuneUpToDepth": 2,
+    "regressionCheck": "PASSED",
+    "shortestDepth": null,
+    "minimalCounterexample": [],
+    "failurePath": "",
+    "violatedInvariants": [],
+    "evaluationsCount": 553,
+    "durationMs": 809.6585
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "repo": "microsoft/exchange-online-pir",
+  "commit": "nov-16-2026-pir",
+  "incidentScope": "Microsoft Exchange Online Preliminary Post-Incident Report (EX1550543 & MO1550821: 23h 50m outage, 96.69% uptime, 500M users impacted)",
+  "subsystem": "High-Core Lock Contention, Asymmetric 14% Capacity Deficit, Watertight Bulkhead Breach & Thundering-Herd Recovery",
+  "invariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "auditVerdict": "BLOCKED",
+  "auditDurationMs": 301.2,
+  "verifyVerdict": "APPROVED",
+  "verifyDurationMs": 3449.9,
+  "verifyEvaluations": 1191
+}

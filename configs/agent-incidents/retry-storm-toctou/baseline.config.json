@@ -1,0 +1,108 @@
+{
+  "workflowId": "wf-ai-agent-retry-storm-toctou",
+  "workflowName": "AI Agent Multi-Layer Retry Storm & TOCTOU Budget Overrun",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "multi-agent-orchestrator",
+      "nodeDescription": "20 concurrent AI agents issuing parallel tool calls and nested retry loops",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "shared-budget-ledger",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "shared-budget-ledger"
+      ]
+    },
+    {
+      "name": "shared-budget-ledger",
+      "nodeDescription": "In-memory budget counter subject to un-locked TOCTOU check-then-act races",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "crm-upstream-service",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 20
+          }
+        }
+      ],
+      "outboundEdges": [
+        "crm-upstream-service"
+      ]
+    },
+    {
+      "name": "crm-upstream-service",
+      "nodeDescription": "External CRM API returning HTTP 500 errors and silent 200 OK error payloads",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "VOLATILE",
+            "idempotencyEnforced": false
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "downstream-pipeline-sink",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 15
+          }
+        }
+      ],
+      "outboundEdges": [
+        "downstream-pipeline-sink"
+      ]
+    },
+    {
+      "name": "downstream-pipeline-sink",
+      "nodeDescription": "Downstream 10-step agent pipeline corrupted by synthetic 200 OK payloads",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

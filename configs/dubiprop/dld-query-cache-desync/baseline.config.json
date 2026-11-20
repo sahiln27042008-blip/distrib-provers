@@ -1,0 +1,89 @@
+{
+  "workflowId": "dubiprop-dld-query-cache-desync",
+  "workflowName": "DubiProp Streamlit Un-cached DLD Query & Upstream Connection Pool Saturation",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "streamlit-client-session",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubiprop-agent-runtime",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubiprop-agent-runtime"
+      ]
+    },
+    {
+      "name": "dubiprop-agent-runtime",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dld-government-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "dld_transaction_cache",
+            "actors": [
+              "streamlit-client-session",
+              "dubiprop-agent-runtime"
+            ],
+            "downstreamAction": "query_dld_property_valuation"
+          }
+        },
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 120
+          }
+        },
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 2
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dld-government-gateway"
+      ]
+    },
+    {
+      "name": "dld-government-gateway",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

@@ -1,0 +1,83 @@
+{
+  "workflowId": "trigger-schedule-cron-strand",
+  "workflowName": "Trigger.dev Schedule Engine Recurrence & Dead-Letter Chaining",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "schedule-recurrence-integrity"
+  ],
+  "nodes": [
+    {
+      "name": "schedule-worker-queue",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 60000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "trigger-task-service",
+            "timeoutMs": 60000,
+            "idempotencyEnabled": false,
+            "senderKey": "schedule_instance_tick",
+            "receiverDedupKey": "run_attempt_1"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "idempotencyKey",
+            "intermediary": "redis-worker-retry",
+            "newReceiverKey": "run_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "trigger-task-service"
+      ]
+    },
+    {
+      "name": "trigger-task-service",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "next-tick-registration",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": true
+          }
+        }
+      ],
+      "outboundEdges": [
+        "next-tick-registration"
+      ]
+    },
+    {
+      "name": "next-tick-registration",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": true
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

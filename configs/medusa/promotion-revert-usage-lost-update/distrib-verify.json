@@ -1,0 +1,15 @@
+{
+  "verdict": "APPROVED",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "medusa-promotion-revert-usage",
+  "appliedAblations": [
+    "zero_hold_lease",
+    "enforce_idempotency",
+    "shed_at_threshold"
+  ],
+  "violatedInvariants": [],
+  "minimalCounterexample": [],
+  "evaluationsCount": 813,
+  "durationMs": 495.51,
+  "findings": []
+}

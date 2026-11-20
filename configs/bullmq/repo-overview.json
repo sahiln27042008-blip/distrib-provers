@@ -1,0 +1,17 @@
+{
+  "repo": "taskforcesh/bullmq",
+  "commit_sha": "b460173",
+  "audited_at": "2026-11-15T19:35:45+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "worker-stalled-lock-expiry-duplicate",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Worker Lock Renewal & Stalled Job Re-queuing",
+      "verified_files": [
+        "src/classes/worker.ts:302-348",
+        "src/classes/worker.ts:1629-1650",
+        "src/classes/lock-manager.ts:58-95"
+      ]
+    }
+  ]
+}

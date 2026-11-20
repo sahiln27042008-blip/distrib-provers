@@ -1,0 +1,68 @@
+{
+  "audit": {
+    "success": true,
+    "verdict": "BLOCKED",
+    "status": "FAILURE_FOUND",
+    "scenarioId": "wf-railway-oct21-control-plane",
+    "shortestDepth": 1,
+    "minimalCounterexample": [
+      {
+        "consonantKind": "DUPLICATE",
+        "targetVowelId": "channel-1-2",
+        "params": {
+          "count": 2
+        },
+        "targetName": "control-plane-gateway → secret-encryption-service",
+        "businessTarget": "control-plane-gateway → secret-encryption-service",
+        "description": "DUPLICATE affects control-plane-gateway → secret-encryption-service [channel-1-2]"
+      }
+    ],
+    "failurePath": "control-plane-gateway → secret-encryption-service",
+    "verdictSummary": "BLOCKED: Railway Oct21 Control-Plane Attack [DUPLICATE on control-plane-gateway → secret-encryption-service]",
+    "violatedInvariants": [
+      "r04-network-idempotency"
+    ],
+    "evaluationsCount": 14,
+    "durationMs": 51.7974,
+    "fingerprint": "2c69ecad4db00b8651d80108651999dd04f88238cf2bca5c0468ab4e2ebbc45d"
+  },
+  "latencyCliff": {
+    "success": true,
+    "status": "CLIFF_FOUND",
+    "scenarioId": "wf-railway-oct21-control-plane",
+    "targetChannel": "channel-1-2",
+    "testedRange": {
+      "low": 0,
+      "high": 60000
+    },
+    "cliffMs": 10006.5,
+    "safeMs": 9992,
+    "collapseMs": 10021,
+    "evaluationsCount": 16,
+    "iterations": 11,
+    "tolerance": 50,
+    "durationMs": 77.6383
+  },
+  "combinedAblationVerify": {
+    "success": true,
+    "verdict": "APPROVED",
+    "verdictSummary": "APPROVED: Railway Oct21 Control-Plane Attack - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "status": "NO_FAILURE_WITHIN_BOUND",
+    "scenarioId": "wf-railway-oct21-control-plane",
+    "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+    "ablations": [
+      "enforce_idempotency",
+      "zero_hold_lease",
+      "fencing_token_enabled",
+      "shed_at_threshold"
+    ],
+    "immuneUpToDepth": 2,
+    "regressionCheck": "PASSED",
+    "shortestDepth": null,
+    "minimalCounterexample": [],
+    "failurePath": "",
+    "violatedInvariants": [],
+    "evaluationsCount": 1123,
+    "durationMs": 2694.5379
+  }
+}

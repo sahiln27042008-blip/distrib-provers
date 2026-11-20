@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "calcom-slot-double-booking",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "time_slot_occupancy_status",
+        "actors": [
+          "concurrent-booker-client-A",
+          "concurrent-booker-client-B"
+        ],
+        "downstreamAction": "create_booking"
+      },
+      "targetName": "slot-availability-engine",
+      "businessTarget": "slot-availability-engine",
+      "description": "STALE_READ_WITHOUT_LOCK affects slot-availability-engine [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 143.84,
+  "executiveSummary": "BLOCKED: Cal.com Slot Availability & Concurrent Double-Booking Race; native-stale-read-double-action violated on slot-availability-engine.",
+  "findings": []
+}

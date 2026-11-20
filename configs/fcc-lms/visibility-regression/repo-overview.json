@@ -1,0 +1,16 @@
+{
+  "repo": "fcc/lms-filing-system",
+  "commit": "nov-2026",
+  "incidentScope": "FCC License Management System (LMS) 7-Hour Outage & Confidential Application Exposure (170 competitive applications leaked)",
+  "subsystem": "State-Transition Visibility Invariants, Confidentiality Window Leases & Search Index Gating",
+  "invariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "auditVerdict": "BLOCKED",
+  "auditDurationMs": 253.2,
+  "verifyVerdict": "APPROVED",
+  "verifyDurationMs": 2540.8,
+  "verifyEvaluations": 1123
+}

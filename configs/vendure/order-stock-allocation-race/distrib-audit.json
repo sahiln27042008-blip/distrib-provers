@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "vendure-stock-allocation-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "stock_allocated_counter",
+        "actors": [
+          "concurrent-checkout-A",
+          "concurrent-checkout-B"
+        ],
+        "downstreamAction": "allocate_stock"
+      },
+      "targetName": "stock-allocation-service",
+      "businessTarget": "stock-allocation-service",
+      "description": "STALE_READ_WITHOUT_LOCK affects stock-allocation-service [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 154.45,
+  "executiveSummary": "BLOCKED: Vendure Order Placement Stock Allocation & Coupon Cap Race; native-stale-read-double-action violated on stock-allocation-service.",
+  "findings": []
+}

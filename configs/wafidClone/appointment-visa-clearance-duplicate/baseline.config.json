@@ -1,0 +1,76 @@
+{
+  "workflowId": "wafid-visa-clearance-duplicate",
+  "workflowName": "Wafid Medical Centers GCC Visa Eligibility & Appointment Re-registration",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "gcc-visa-medical-applicant-portal",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "wafid-appointment-service",
+            "timeoutMs": 20000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "wafid-appointment-service"
+      ]
+    },
+    {
+      "name": "wafid-appointment-service",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 20000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "gcc-health-council-registry",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false,
+            "senderKey": "passport_uae_visa_applicant_A109283",
+            "receiverDedupKey": "wafid_appointment_attempt_1"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "appointment_number",
+            "intermediary": "save_appointment.php",
+            "newReceiverKey": "wafid_appointment_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "gcc-health-council-registry"
+      ]
+    },
+    {
+      "name": "gcc-health-council-registry",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

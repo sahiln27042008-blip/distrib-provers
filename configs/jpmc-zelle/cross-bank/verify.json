@@ -1,0 +1,16 @@
+{
+  "verdict": "APPROVED",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "wf-jpmc-zelle-cross-bank-2026",
+  "appliedAblations": [
+    "enforce_idempotency",
+    "zero_hold_lease",
+    "fencing_token_enabled",
+    "shed_at_threshold"
+  ],
+  "violatedInvariants": [],
+  "minimalCounterexample": [],
+  "evaluationsCount": 1191,
+  "durationMs": 1839.92,
+  "findings": []
+}

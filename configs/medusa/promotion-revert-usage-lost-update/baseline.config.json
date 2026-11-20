@@ -1,0 +1,90 @@
+{
+  "workflowId": "medusa-promotion-revert-usage",
+  "workflowName": "Medusa Cart Completion & Promotion Reversion",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "budget-integrity"
+  ],
+  "nodes": [
+    {
+      "name": "cart-checkout-orchestrator",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "VOLATILE"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "payment-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "payment-gateway"
+      ]
+    },
+    {
+      "name": "payment-gateway",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "revert-usage-compensation",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "revert-usage-compensation"
+      ]
+    },
+    {
+      "name": "revert-usage-compensation",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "ttlMs": 3000,
+            "heldDuringExternalChannel": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "promotion_budget_used",
+            "actors": [
+              "checkout-saga-revert",
+              "concurrent-checkout-register"
+            ],
+            "downstreamAction": "update_budget"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "promotion-campaign-budget-db"
+      ]
+    },
+    {
+      "name": "promotion-campaign-budget-db",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

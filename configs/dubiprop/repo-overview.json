@@ -1,0 +1,14 @@
+{
+  "repo": "iegoff/dubiprop",
+  "commit": "cdea42d",
+  "name": "DubiProp (Dubai Properties AI Assistant)",
+  "description": "Streamlit AI assistant retrieving live Dubai Land Department (DLD) property transactions from gateway.dubailand.gov.ae with HTTPAdapter retry policies and OpenAI tool calling",
+  "subsystems": [
+    {
+      "name": "Live DLD Transaction Ingestion & Un-Cached Retry Storm",
+      "slug": "dld-query-cache-desync",
+      "entrypoint": "agent.py:19-27, agent.py:79-110, agent.py:165-170, agent.py:254-264",
+      "criticality": "HIGH (Un-cached reactive re-renders triggering HTTP 429 retry storm and upstream quota lockout, coupled with unlocked transaction reads)"
+    }
+  ]
+}

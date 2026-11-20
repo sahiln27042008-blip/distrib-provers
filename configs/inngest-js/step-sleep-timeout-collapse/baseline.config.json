@@ -1,0 +1,76 @@
+{
+  "workflowId": "inngest-step-sleep-collapse",
+  "workflowName": "Inngest Step Duration Serialization & Premature Execution Cliff",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "inngest-step-executor",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "inngest-execution-engine",
+            "timeoutMs": 5400000,
+            "idempotencyEnabled": false,
+            "senderKey": "step_sleep_1h30m",
+            "receiverDedupKey": "step_sleep_empty_str"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STRIP_ON_RETRY",
+          "params": {
+            "strippedHeader": "idempotencyKey",
+            "intermediary": "step-replay-memoizer",
+            "newReceiverKey": "step_run_attempt_2"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "inngest-execution-engine"
+      ]
+    },
+    {
+      "name": "inngest-execution-engine",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 5400000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "subscription-billing-service",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "subscription-billing-service"
+      ]
+    },
+    {
+      "name": "subscription-billing-service",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

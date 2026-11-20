@@ -1,0 +1,120 @@
+{
+  "workflowId": "mcp-dubai-http-post-retry-duplicate",
+  "workflowName": "MCP-Dubai HTTP Client Tenacity POST Retry & Duplicate Upstream Execution",
+  "declaredInvariants": [
+    "native-network-idempotency",
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "mcp-ai-agent-client",
+      "nodeDescription": "Autonomous AI agent invoking Dubai government tools",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "mcp-dubai-server",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "mcp-dubai-server"
+      ]
+    },
+    {
+      "name": "mcp-dubai-server",
+      "nodeDescription": "FastMCP server router (src/mcp_dubai/server.py)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "http-client-retrier",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "http-client-retrier"
+      ]
+    },
+    {
+      "name": "http-client-retrier",
+      "nodeDescription": "Tenacity-wrapped HTTP client retrying POST requests (src/mcp_dubai/_shared/http_client.py:228-251)",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubai-pulse-oauth-service",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false,
+            "senderKey": "mcp_dubai_post_tx_101",
+            "receiverDedupKey": "upstream_dubai_pulse_tx_202"
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 2
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubai-pulse-oauth-service"
+      ]
+    },
+    {
+      "name": "dubai-pulse-oauth-service",
+      "nodeDescription": "OAuth token session holder and rate-gate (src/mcp_dubai/_shared/auth.py:183-225)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "dubai-pulse-api-gateway",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "dubai-pulse-api-gateway"
+      ]
+    },
+    {
+      "name": "dubai-pulse-api-gateway",
+      "nodeDescription": "Upstream Dubai government API gateway",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

@@ -1,0 +1,136 @@
+{
+  "repo": "medusajs/medusa",
+  "commit_sha": "01de0be2",
+  "workflow_slug": "promotion-revert-usage-lost-update",
+  "source_issue_or_pr": "https://github.com/medusajs/medusa/issues/16595",
+  "verified_files": [
+    {
+      "path": "packages/modules/promotion/src/services/promotion-module.ts",
+      "lines": "337-395",
+      "code_fact": "registerUsage transaction requirement and knex('promotion_campaign_budget').forUpdate() row lock pattern preserved."
+    },
+    {
+      "path": "packages/modules/promotion/src/services/promotion-module.ts",
+      "lines": "615-790",
+      "code_fact": "revertUsage patched to mandate a transaction, acquire identical knex('promotion_campaign_budget').orderBy('id').forUpdate() row locks, and re-read with refresh: true before computing decrements (or use atomic SQL delta: used = GREATEST(0, used - amount))."
+    },
+    {
+      "path": "packages/core/core-flows/src/promotion/steps/register-usage.ts",
+      "lines": "38-54",
+      "code_fact": "registerUsageStep compensation executes inside an isolated transaction manager with row lock serialization."
+    },
+    {
+      "path": "packages/core/core-flows/src/cart/workflows/complete-cart.ts",
+      "lines": "650-685",
+      "code_fact": "Payment authorization failures safely roll back usage without losing concurrent committed checkouts."
+    }
+  ],
+  "plain_english_spec": "Patched promotion module serializes revertUsage using the exact same row-level locking (SELECT ... FOR UPDATE) and refreshed transaction re-read used by registerUsage, or applies atomic SQL decrements, completely eliminating lost-update race conditions during saga compensation.",
+  "primitives": {
+    "REGISTER": {
+      "owner": "PostgreSQL (promotion_campaign_budget row)",
+      "uniqueness_constraint": "Atomic delta or row-locked serialization",
+      "durable": true,
+      "idempotency_enforced": true
+    },
+    "LOG": {
+      "audit_record": "Medusa Workflow Execution Log & Step Compensation Journal",
+      "buffer_capacity": 1000
+    },
+    "LEASE": {
+      "resource": "PostgreSQL Row Lock (SELECT ... FOR UPDATE) held symmetrically on register and revert",
+      "capacity_or_ttl_ms": 3000,
+      "max_attempts": 3
+    },
+    "CHANNEL": {
+      "boundary": "Saga Orchestrator -> PromotionModuleService & Payment Gateway Channel",
+      "ack_behavior": "Serialized compensation rollback with atomic database updates",
+      "timeout_ms": 10000
+    },
+    "TIMING": {
+      "timeout_ms": 10000,
+      "max_wait_or_processing_ms": 15000
+    },
+    "OMISSION": {
+      "fault_trigger": "Payment failure compensation safely handled without corrupting budget register"
+    },
+    "DUPLICATION": {
+      "retry_behavior": "Idempotent delta prevents overwrite of concurrent transactions",
+      "reuses_idempotency_key": true
+    },
+    "SATURATE": {
+      "bottleneck": "Eliminated: budget counters strictly match actual net committed redemptions"
+    },
+    "CRASH_AMNESIA": {
+      "volatile_state_lost": "Prevented: atomic database updates preserve committed state"
+    },
+    "BYZANTINE": {
+      "conflicting_signal": "Resolved: row lock blocks unlocked reads of pre-commit state"
+    }
+  },
+  "safety_invariant": "Promotional campaign budget used counter must accurately reflect the net sum of all committed registrations minus reverted compensations—never allow concurrent interleaving to silently erase committed usage.",
+  "workflow_graph": {
+    "nodes": [
+      {
+        "id": "node-cart-saga",
+        "name": "Cart Completion Saga",
+        "role": "Distributed Checkout Saga Orchestrator",
+        "substrate": "V4_CHANNEL",
+        "timeoutMs": 10000,
+        "evidence": "complete-cart.ts"
+      },
+      {
+        "id": "node-payment-gateway",
+        "name": "Payment Authorization Gateway",
+        "role": "External Payment Processor Boundary",
+        "substrate": "V4_CHANNEL",
+        "timeoutMs": 10000,
+        "evidence": "authorizePaymentSessionStep"
+      },
+      {
+        "id": "node-budget-register",
+        "name": "Campaign Budget Register",
+        "role": "PostgreSQL Durable State Owner with Row Lock Serialization",
+        "substrate": "V1_CELL",
+        "durable": true,
+        "evidence": "promotion-module.ts: SELECT FOR UPDATE on revert"
+      },
+      {
+        "id": "node-compensation-revert",
+        "name": "Compensation Revert Step (Locked)",
+        "role": "Row-Locked Atomic Compensation",
+        "substrate": "V3_LEASE",
+        "capacity": 5,
+        "timeoutMs": 5000,
+        "evidence": "revertUsage with forUpdate lock"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-checkout-to-payment",
+        "source": "node-cart-saga",
+        "target": "node-payment-gateway",
+        "latencyMs": 150,
+        "idempotent": true,
+        "evidence": "completeCartWorkflow: authorizePaymentSessionStep"
+      },
+      {
+        "id": "edge-compensation-to-revert",
+        "source": "node-cart-saga",
+        "target": "node-compensation-revert",
+        "latencyMs": 50,
+        "idempotent": true,
+        "evidence": "registerUsageStep compensation handler"
+      },
+      {
+        "id": "edge-revert-to-budget",
+        "source": "node-compensation-revert",
+        "target": "node-budget-register",
+        "latencyMs": 20,
+        "idempotent": true,
+        "evidence": "campaignBudgetService_.update with row lock serialization"
+      }
+    ],
+    "maxEndToEndMs": 15000
+  }
+}

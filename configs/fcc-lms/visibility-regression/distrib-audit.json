@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-fcc-lms-visibility-regression",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 10
+      },
+      "targetName": "lms-application-registry",
+      "businessTarget": "lms-application-registry",
+      "description": "SATURATE affects lms-application-registry [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 253.2084,
+  "executiveSummary": "BLOCKED: FCC LMS Competitive Window State Visibility Regression; native-lease-epoch-expiry, native-channel-cascade violated on lms-application-registry.",
+  "findings": []
+}

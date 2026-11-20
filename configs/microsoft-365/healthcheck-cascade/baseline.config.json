@@ -1,0 +1,109 @@
+{
+  "workflowId": "m365-healthcheck-load-amplification",
+  "workflowName": "Microsoft 365 Exchange Online Health-Check Death Spiral & AI Connector Cascade",
+  "declaredInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "enterprise-agent-ingress",
+      "nodeDescription": "Enterprise clients, Copilot, and external AI agents (OpenAI, Claude) issuing Graph/Exchange calls",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "frontdoor-gateway-tier",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "frontdoor-gateway-tier"
+      ]
+    },
+    {
+      "name": "frontdoor-gateway-tier",
+      "nodeDescription": "Edge networking gateways handling secure connection setup (TLS handshake, token negotiation)",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "surviving-gateway-tier",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 10
+          }
+        }
+      ],
+      "outboundEdges": [
+        "surviving-gateway-tier"
+      ]
+    },
+    {
+      "name": "surviving-gateway-tier",
+      "nodeDescription": "Remaining healthy nodes after automated health checks eject failing nodes from rotation",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 4,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "exchange-online-backend",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "exchange-online-backend"
+      ]
+    },
+    {
+      "name": "exchange-online-backend",
+      "nodeDescription": "Exchange Online mailboxes, calendars, and Microsoft Graph backend services",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 5
+}

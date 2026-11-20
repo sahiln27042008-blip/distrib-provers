@@ -1,0 +1,17 @@
+{
+  "repo": "earthians/marley",
+  "commit_sha": "6dafd4b",
+  "audited_at": "2026-11-15T23:46:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "encounter-medication-duplicate-prescription",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Patient Encounter Submission & Medication Order Generation",
+      "verified_files": [
+        "healthcare/healthcare/doctype/patient_encounter/patient_encounter.py:45-56",
+        "healthcare/healthcare/doctype/patient_encounter/patient_encounter.py:268-281",
+        "healthcare/healthcare/doctype/patient_appointment/patient_appointment.py:175-195"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "repo": "zad-tools/uaemcp",
+  "commit_sha": "4dec8fb",
+  "audited_at": "2026-11-16T18:53:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "tax-swr-cache-invalidation-race",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "UAE Federal Tax Authority (FTA) Caching, Rate Limiting & SWR Cache Invalidation Concurrency",
+      "verified_files": [
+        "src/rate-limit.ts:17-31",
+        "src/config.ts:60-63",
+        "src/config.ts:74",
+        "src/http.ts:26-62",
+        "src/tourism-pulse.ts:136-160",
+        "src/trade-flow-service.ts:13-48",
+        "src/tax-archive.ts:23-51"
+      ]
+    }
+  ]
+}

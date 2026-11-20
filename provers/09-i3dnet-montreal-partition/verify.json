@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "verdict": "APPROVED",
+  "verdictSummary": "APPROVED: i3D.net Smartdc Montreal Network Partition & Standalone Recovery Deadlock - Invariant verified under enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+  "status": "NO_FAILURE_WITHIN_BOUND",
+  "scenarioId": "wf-i3dnet-smartdc-montreal-partition-2026",
+  "ablation": "enforce_idempotency+zero_hold_lease+fencing_token_enabled+shed_at_threshold",
+  "ablations": [
+    "enforce_idempotency",
+    "zero_hold_lease",
+    "fencing_token_enabled",
+    "shed_at_threshold"
+  ],
+  "immuneUpToDepth": 2,
+  "regressionCheck": "PASSED",
+  "shortestDepth": null,
+  "minimalCounterexample": [],
+  "failurePath": "",
+  "violatedInvariants": [],
+  "evaluationsCount": 1123,
+  "durationMs": 1764.3576999999932
+}

@@ -1,0 +1,19 @@
+{
+  "repo": "triggerdotdev/trigger.dev",
+  "commit_sha": "2fbd5c7",
+  "scanned_date": "2026-11-15T00:26:00Z",
+  "workflows": [
+    {
+      "workflow_slug": "schedule-cron-dlq-strand",
+      "status": "CANDIDATE_UNGUARDED",
+      "source": "https://github.com/triggerdotdev/trigger.dev/issues/5120",
+      "summary": "ScheduleEngine triggerScheduledTask fails to pass idempotency key on trigger, hardcodes finalAttempt: false, and drops recurring cron chains into DLQ upon transient DB outage (>30s)."
+    },
+    {
+      "workflow_slug": "retry-fetch-abort-leak",
+      "status": "CANDIDATE_UNGUARDED",
+      "source": "https://github.com/triggerdotdev/trigger.dev/issues/5116",
+      "summary": "SDK retry.fetch treats caller AbortError as timeout, ignores Request.signal and already-aborted signals, executing redundant external HTTP requests."
+    }
+  ]
+}

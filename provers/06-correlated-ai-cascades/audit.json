@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-correlated-ai-cascades-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 35
+      },
+      "targetName": "primary-ai-provider",
+      "businessTarget": "primary-ai-provider",
+      "description": "SATURATE affects primary-ai-provider [vowel-2-1]"
+    }
+  ],
+  "failurePath": "primary-ai-provider",
+  "verdictSummary": "BLOCKED: Correlated AI API Cascades & Shared-Layer Multi-Provider Failover Collapse [SATURATE on primary-ai-provider]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 6.195599999991828,
+  "fingerprint": "11ad2a9fed62a65687bf535ebb283ef97c0d0405de1d149ed44d2040eb2a9a77",
+  "executiveSummary": "BLOCKED: Correlated AI API Cascades & Shared-Layer Multi-Provider Failover Collapse; native-lease-epoch-expiry, native-channel-cascade violated on primary-ai-provider.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 35
+      },
+      "targetName": "primary-ai-provider",
+      "businessTarget": "primary-ai-provider",
+      "description": "SATURATE affects primary-ai-provider [vowel-2-1]"
+    }
+  ]
+}

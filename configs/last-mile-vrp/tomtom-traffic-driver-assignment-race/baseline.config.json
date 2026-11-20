@@ -1,0 +1,131 @@
+{
+  "workflowId": "last-mile-vrp-driver-assignment-race",
+  "workflowName": "Dubai Last-Mile VRP TomTom Traffic Latency & Concurrent Driver Assignment Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "fleet-dispatch-controller",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "vrp-route-optimizer",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "vrp-route-optimizer"
+      ]
+    },
+    {
+      "name": "vrp-route-optimizer",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 5,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "tomtom-traffic-feed",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "tomtom-traffic-feed"
+      ]
+    },
+    {
+      "name": "tomtom-traffic-feed",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "driver-assignment-coordinator",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DELAY",
+          "params": {
+            "durationMs": 35000
+          }
+        }
+      ],
+      "outboundEdges": [
+        "driver-assignment-coordinator"
+      ]
+    },
+    {
+      "name": "driver-assignment-coordinator",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 10,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "fleet-dispatch-ledger",
+            "timeoutMs": 15000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "parcel_driver_assignment_state",
+            "actors": [
+              "automated-vrp-scheduler-1",
+              "manual-dispatch-override-2"
+            ],
+            "downstreamAction": "assign_parcel_to_driver"
+          }
+        },
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 2
+          }
+        }
+      ],
+      "outboundEdges": [
+        "fleet-dispatch-ledger"
+      ]
+    },
+    {
+      "name": "fleet-dispatch-ledger",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

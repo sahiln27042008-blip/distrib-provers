@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-google-antigravity-sse-drops-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "gemini-inference-workers",
+      "businessTarget": "gemini-inference-workers",
+      "description": "SATURATE affects gemini-inference-workers [vowel-3-1]"
+    }
+  ],
+  "failurePath": "gemini-inference-workers",
+  "verdictSummary": "BLOCKED: Google Antigravity & AI Studio Paid-Tier Agent Termination and SSE Drops [SATURATE on gemini-inference-workers]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 5.8157999999966705,
+  "fingerprint": "84e02637a3d3f34a4c5e04f089bab1dde94cc18387b6c216095e997de995d330",
+  "executiveSummary": "BLOCKED: Google Antigravity & AI Studio Paid-Tier Agent Termination and SSE Drops; native-lease-epoch-expiry, native-channel-cascade violated on gemini-inference-workers.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "loadUnits": 30
+      },
+      "targetName": "gemini-inference-workers",
+      "businessTarget": "gemini-inference-workers",
+      "description": "SATURATE affects gemini-inference-workers [vowel-3-1]"
+    }
+  ]
+}

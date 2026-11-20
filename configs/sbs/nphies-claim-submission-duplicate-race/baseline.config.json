@@ -1,0 +1,76 @@
+{
+  "workflowId": "sbs-nphies-claim-submission-race",
+  "workflowName": "SBS NPHIES Bridge Service Request Concurrency & Duplicate Claim Submission Race",
+  "declaredInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "nodes": [
+    {
+      "name": "hospital-billing-service",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "nphies-claim-coordinator",
+            "timeoutMs": 25000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "outboundEdges": [
+        "nphies-claim-coordinator"
+      ]
+    },
+    {
+      "name": "nphies-claim-coordinator",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 1,
+            "ttlMs": 25000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "national-nphies-payer-database",
+            "timeoutMs": 30000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "STALE_READ_WITHOUT_LOCK",
+          "params": {
+            "stateKey": "service_request_claim_status",
+            "actors": [
+              "concurrent-claim-submission-worker-1",
+              "concurrent-claim-submission-worker-2"
+            ],
+            "downstreamAction": "create_nphies_claim"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "national-nphies-payer-database"
+      ]
+    },
+    {
+      "name": "national-nphies-payer-database",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false
+          }
+        }
+      ]
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 3
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "dubiprop-dld-retry-storm",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-network-idempotency"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "DELAY",
+      "targetVowelId": "vowel-3-1",
+      "params": {
+        "durationMs": 35000
+      },
+      "targetName": "dld-gateway-session → dld-api-connection-pool",
+      "businessTarget": "dld-gateway-session → dld-api-connection-pool",
+      "description": "DELAY affects dld-gateway-session → dld-api-connection-pool [vowel-3-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 149.5,
+  "executiveSummary": "BLOCKED: DubiProp Streamlit Un-cached DLD Query & Upstream Connection Pool Saturation; native-network-idempotency violated on dld-gateway-session → dld-api-connection-pool."
+}

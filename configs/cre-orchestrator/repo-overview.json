@@ -1,0 +1,18 @@
+{
+  "repo": "ahacker-1/cre-acquisition-orchestrator",
+  "commit_sha": "a1cdd7f",
+  "audited_at": "2026-11-16T00:38:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "acquisition-checkpoint-lost-update",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Multi-Agent Commercial Real Estate Acquisition Due-Diligence & Checkpoint Concurrency",
+      "verified_files": [
+        "scripts/orchestrate.js:470-485",
+        "scripts/orchestrate.js:675-690",
+        "scripts/lib/runtime-core.js:90-110",
+        "scripts/lib/runtime-core.js:130-165"
+      ]
+    }
+  ]
+}

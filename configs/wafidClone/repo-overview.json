@@ -1,0 +1,18 @@
+{
+  "repo": "smat-T/wafidClone",
+  "commit_sha": "2dfedc9",
+  "audited_at": "2026-11-15T23:53:00+05:30",
+  "workflows": [
+    {
+      "workflow_slug": "appointment-visa-clearance-duplicate",
+      "status": "VERIFIED_VULNERABLE",
+      "target_subsystem": "Wafid GCC Medical Center Appointment & Visa Clearance Processing",
+      "verified_files": [
+        "src/save_appointment.php:25-65",
+        "public/medical/update_status.php:30-48",
+        "database/schema.sql:30-48",
+        "src/config/database.php:10-25"
+      ]
+    }
+  ]
+}

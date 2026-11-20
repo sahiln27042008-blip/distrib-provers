@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-autonomous-agent-unfenced-mutation",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 10
+      },
+      "targetName": "mutation-execution-gateway",
+      "businessTarget": "mutation-execution-gateway",
+      "description": "SATURATE affects mutation-execution-gateway [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 171.338,
+  "executiveSummary": "BLOCKED: Autonomous Agent Mutation Gate & Byzantine Verification Divergence; native-lease-epoch-expiry, native-channel-cascade violated on mutation-execution-gateway.",
+  "findings": []
+}

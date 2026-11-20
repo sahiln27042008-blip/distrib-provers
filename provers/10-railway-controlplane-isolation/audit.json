@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-railway-control-plane-security",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 10
+      },
+      "targetName": "secret-encryption-service",
+      "businessTarget": "secret-encryption-service",
+      "description": "SATURATE affects secret-encryption-service [vowel-2-1]"
+    }
+  ],
+  "failurePath": "secret-encryption-service",
+  "verdictSummary": "BLOCKED: Railway Control Plane Lateral Movement & Blast Radius Containment [SATURATE on secret-encryption-service]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 3.9363000000012107,
+  "fingerprint": "8de23e90ffa6bf073c7f2f7affe73a39f0c5a36c9671a68b498ad5e68dec5fa5",
+  "executiveSummary": "BLOCKED: Railway Control Plane Lateral Movement & Blast Radius Containment; native-lease-epoch-expiry, native-channel-cascade violated on secret-encryption-service.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 10
+      },
+      "targetName": "secret-encryption-service",
+      "businessTarget": "secret-encryption-service",
+      "description": "SATURATE affects secret-encryption-service [vowel-2-1]"
+    }
+  ]
+}

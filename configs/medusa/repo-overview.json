@@ -1,0 +1,13 @@
+{
+  "repo": "medusajs/medusa",
+  "commit_sha": "01de0be2",
+  "scanned_date": "2026-11-15T11:25:00Z",
+  "workflows": [
+    {
+      "workflow_slug": "promotion-revert-usage-lost-update",
+      "status": "CANDIDATE_UNGUARDED",
+      "source": "https://github.com/medusajs/medusa/issues/16595",
+      "summary": "PromotionModuleService.registerUsage acquires SELECT ... FOR UPDATE row locks, but revertUsage (the compensation step in completeCartWorkflow) performs an unlocked read and writes an absolute computed value back, silently wiping concurrent registerUsage increments and causing promotional budget overspend."
+    }
+  ]
+}

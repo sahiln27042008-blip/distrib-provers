@@ -1,0 +1,62 @@
+{
+  "workflow_slug": "promotion-revert-usage-lost-update",
+  "repo": "medusajs/medusa",
+  "commit_sha": "01de0be2",
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "executions": 2,
+  "max_depth_explored": 3,
+  "seed": 42,
+  "violated_invariant": "Promotional campaign budget used counter must accurately reflect the net sum of all committed registrations minus reverted compensations—never allow concurrent interleaving to silently erase committed usage.",
+  "violated_mechanism": "C1_DELAY: Latency exceeded node timeout or workflow deadline",
+  "observed_failure": "1 dependency failure(s): Call to Payment Authorization Gateway elapsed 5150ms, exceeding timeout 5000ms",
+  "shortest_counterexample": [
+    {
+      "kind": "DELAY",
+      "targetId": "edge-checkout-to-payment",
+      "value": 5000,
+      "label": "DELAY(5000ms) on edge-checkout-to-payment"
+    }
+  ],
+  "counterexample_trace": [
+    {
+      "edgeId": "edge-checkout-to-payment",
+      "elapsedMs": 5150,
+      "outcome": "TIMED_OUT",
+      "detail": "Call to Payment Authorization Gateway elapsed 5150ms, exceeding timeout 5000ms"
+    },
+    {
+      "edgeId": "edge-compensation-to-revert",
+      "elapsedMs": 50,
+      "outcome": "DELIVERED"
+    },
+    {
+      "edgeId": "edge-revert-to-budget",
+      "elapsedMs": 20,
+      "outcome": "DELIVERED"
+    }
+  ],
+  "verified_files": [
+    {
+      "path": "packages/modules/promotion/src/services/promotion-module.ts",
+      "lines": "337-395",
+      "code_fact": "registerUsage explicitly requires a transaction and acquires row-level locks via knex('promotion_campaign_budget').forUpdate().select('id') and knex('promotion').forUpdate(), re-reading under lock with refresh: true to serialize concurrent usage."
+    },
+    {
+      "path": "packages/modules/promotion/src/services/promotion-module.ts",
+      "lines": "615-790",
+      "code_fact": "revertUsage executes an unlocked read via listActivePromotions_, calculates newUsedValue = MathBN.sub(campaignBudgetData.used, computedAction.amount) from stale in-memory state, and persists the absolute value with no row lock or re-read."
+    },
+    {
+      "path": "packages/core/core-flows/src/promotion/steps/register-usage.ts",
+      "lines": "38-54",
+      "code_fact": "registerUsageStep defines revertUsage as its automatic compensation handler when completeCartWorkflow fails downstream."
+    },
+    {
+      "path": "packages/core/core-flows/src/cart/workflows/complete-cart.ts",
+      "lines": "650-685",
+      "code_fact": "completeCartWorkflow dispatches registerUsageStep in parallel with inventory reservation, then invokes authorizePaymentSessionStep; a payment decline or gateway timeout triggers compensation, calling revertUsage."
+    }
+  ],
+  "safety_invariant": "Promotional campaign budget used counter must accurately reflect the net sum of all committed registrations minus reverted compensations—never allow concurrent interleaving to silently erase committed usage."
+}

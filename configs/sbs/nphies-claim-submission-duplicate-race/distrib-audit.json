@@ -1,0 +1,30 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "sbs-nphies-claim-submission-race",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-stale-read-double-action"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "STALE_READ_WITHOUT_LOCK",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "stateKey": "service_request_claim_status",
+        "actors": [
+          "concurrent-claim-submission-worker-1",
+          "concurrent-claim-submission-worker-2"
+        ],
+        "downstreamAction": "create_nphies_claim"
+      },
+      "targetName": "nphies-claim-coordinator",
+      "businessTarget": "nphies-claim-coordinator",
+      "description": "STALE_READ_WITHOUT_LOCK affects nphies-claim-coordinator [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 2,
+  "durationMs": 124.5052,
+  "executiveSummary": "BLOCKED: SBS NPHIES Bridge Service Request Concurrency & Duplicate Claim Submission Race; native-stale-read-double-action violated on nphies-claim-coordinator.",
+  "findings": []
+}
