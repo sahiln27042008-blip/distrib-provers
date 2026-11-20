@@ -23,7 +23,7 @@ const ARTCC_CENTERS = [
 
 async function run() {
   console.log('='.repeat(78))
-  console.log(' DISTRIB REPRODUCIBLE PROVER: FAA NATIONWIDE GROUND STOP (Nov 13, 2026)')
+  console.log(' BOUNDED INGRESS PROVER: FAA NATIONWIDE GROUND STOP (Nov 13, 2026)')
   console.log('='.repeat(78))
 
   // --------------------------------------------------------------------------
@@ -86,7 +86,7 @@ async function run() {
   // --------------------------------------------------------------------------
   // PHASE 3: DISTRIB FORMAL STATE-SPACE PROOF
   // --------------------------------------------------------------------------
-  console.log('\n[PHASE 3] Running Formal Exhaustive State-Space Verification...')
+  console.log('\n[PHASE 3] Running Formal Bounded State-Space Verification...')
   const configPath = resolve(import.meta.dirname, '../baseline.config.json')
 
   // Step 3a: Audit Baseline

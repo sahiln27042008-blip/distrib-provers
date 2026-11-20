@@ -43,7 +43,7 @@ Unlike mock tests or synthetic simulations, this prover executes **two concrete 
 
 ```text
 ==============================================================================
- DISTRIB REPRODUCIBLE PROVER: FAA NATIONWIDE GROUND STOP (Nov 13, 2026)
+ BOUNDED INGRESS PROVER: FAA NATIONWIDE GROUND STOP (Nov 13, 2026)
 ==============================================================================
 
 [PHASE 1] Executing Native Component Failure Simulation...
@@ -58,7 +58,7 @@ Unlike mock tests or synthetic simulations, this prover executes **two concrete 
   - Desynchronized ARTCC Centers: 0 of 22
   -> [VERIFIED RESOLUTION] Concrete TypeScript patch maintains linearizable national air state.
 
-[PHASE 3] Running Formal Exhaustive State-Space Verification...
+[PHASE 3] Running Formal Bounded State-Space Verification...
   - Baseline Audit Verdict: [ GATE: BLOCKED ] (Evaluations: 22, Duration: 1722.79ms)
   - Hardened Verify Verdict: [ GATE: APPROVED ] (Evaluations: 1191, Duration: 152873.30ms)
   - Invariant Status: NO_FAILURE_WITHIN_BOUND
