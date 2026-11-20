@@ -49,13 +49,13 @@ Unlike mock tests or synthetic simulations, this prover executes **two concrete 
 [PHASE 1] Executing Native Component Failure Simulation...
   - Dispatched Packets: 1000
   - Dropped Packets: 950 (95.0% loss)
-  - Desynchronized ARTCC Centers: 17 of 17
+  - Desynchronized ARTCC Centers: 17 of 22
   -> [VERIFIED FAILURE] Unpatched ERAM router reproduces nationwide state drift.
 
 [PHASE 2] Executing Patched Component Verification (Token Bucket + Fences)...
   - Dispatched Packets: 1000
   - Dropped Packets: 0
-  - Desynchronized ARTCC Centers: 0 of 17
+  - Desynchronized ARTCC Centers: 0 of 22
   -> [VERIFIED RESOLUTION] Concrete TypeScript patch maintains linearizable national air state.
 
 [PHASE 3] Running Formal Exhaustive State-Space Verification...
@@ -64,6 +64,6 @@ Unlike mock tests or synthetic simulations, this prover executes **two concrete 
   - Invariant Status: NO_FAILURE_WITHIN_BOUND
 
 ==============================================================================
- PROVER COMPLETE: NATIVE CODE & DISTRIB STATE-SPACE PROOF 100% VERIFIED
+ PROVER COMPLETE: NATIVE CODE & BOUNDED VERIFICATION COMPLETE
 ==============================================================================
 ```
