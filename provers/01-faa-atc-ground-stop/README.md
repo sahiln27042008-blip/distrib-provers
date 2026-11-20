@@ -2,7 +2,8 @@
 
 > **Deterministic Reproduction & Formal Invariant Proof**  
 > *Target Architecture*: FAA En Route Automation Modernization (ERAM) National Airspace Router Network  
-> *Incident Impact*: Air traffic halt across major US hubs; 17 Air Route Traffic Control Centers (ARTCCs) desynchronized.
+> *Incident Impact*: Air traffic halt across major US hubs; 17 Air Route Traffic Control Centers (ARTCCs) desynchronized.  
+> *External Forensic Analysis*: [Sophos: The Day the FAA Halted Departures Nationwide](https://www.sophos.com/en-us/blog/the-day-the-faa-halted-departures-nationwide)
 
 ---
 
