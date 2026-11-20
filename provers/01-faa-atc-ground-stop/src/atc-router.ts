@@ -25,11 +25,13 @@ export class ATCRouterUnpatched {
   private queueCapacity: number = 50
   private buffer: FlightStripUpdate[] = []
   private centers: Map<string, ARTCCNodeState> = new Map()
+  private affectedCenters: Set<string>
 
   public droppedPackets: number = 0
 
-  constructor(centerCodes: string[]) {
-    for (const code of centerCodes) {
+  constructor(allCenterCodes: string[], affectedCenterCodes?: string[]) {
+    this.affectedCenters = new Set(affectedCenterCodes ?? allCenterCodes)
+    for (const code of allCenterCodes) {
       this.centers.set(code, {
         centerCode: code,
         activeFlightStrips: new Map(),
@@ -42,6 +44,14 @@ export class ATCRouterUnpatched {
    * Submit an incoming flight strip update into the router queue
    */
   submitUpdate(update: FlightStripUpdate): boolean {
+    // Unaffected centers maintain isolated links; transit mesh suffers buffer exhaustion
+    for (const [code, state] of this.centers.entries()) {
+      if (!this.affectedCenters.has(code)) {
+        state.activeFlightStrips.set(update.flightId, update)
+        state.receivedCount++
+      }
+    }
+
     if (this.buffer.length >= this.queueCapacity) {
       // Buffer full! Silent packet drop without backpressure or downstream notification
       this.droppedPackets++
@@ -52,14 +62,16 @@ export class ATCRouterUnpatched {
   }
 
   /**
-   * Flush and broadcast buffered messages to all 17 ARTCC centers
+   * Flush and broadcast buffered messages to transit-connected ARTCC centers
    */
   drainAndBroadcast(): void {
     while (this.buffer.length > 0) {
       const update = this.buffer.shift()!
-      for (const center of this.centers.values()) {
-        center.activeFlightStrips.set(update.flightId, update)
-        center.receivedCount++
+      for (const [code, state] of this.centers.entries()) {
+        if (this.affectedCenters.has(code)) {
+          state.activeFlightStrips.set(update.flightId, update)
+          state.receivedCount++
+        }
       }
     }
   }

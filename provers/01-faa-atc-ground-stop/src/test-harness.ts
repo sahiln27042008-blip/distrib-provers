@@ -16,7 +16,13 @@ import { resolve } from 'node:path'
 // Import DISTRIB Core engine
 import { runAuditOnConfig, runVerifyOnConfig } from '../../../packages/distrib-core/src/api.ts'
 
-const ARTCC_CENTERS = [
+const ALL_ARTCC_CENTERS = [
+  'ZBW', 'ZNY', 'ZDC', 'ZTL', 'ZAU', 'ZMP', 'ZKC', 'ZME',
+  'ZHU', 'ZFW', 'ZDV', 'ZLC', 'ZSE', 'ZOA', 'ZLA', 'ZAB', 'ZJX',
+  'ZOB', 'ZID', 'ZMA', 'ZAN', 'ZHN'
+]
+
+const AFFECTED_TRANSIT_CENTERS = [
   'ZBW', 'ZNY', 'ZDC', 'ZTL', 'ZAU', 'ZMP', 'ZKC', 'ZME',
   'ZHU', 'ZFW', 'ZDV', 'ZLC', 'ZSE', 'ZOA', 'ZLA', 'ZAB', 'ZJX'
 ]
@@ -30,7 +36,7 @@ async function run() {
   // PHASE 1: NATIVE CODE REPRODUCTION (UNPATCHED BUFFER OVERFLOW)
   // --------------------------------------------------------------------------
   console.log('\n[PHASE 1] Executing Native Component Failure Simulation...')
-  const unpatchedRouter = new ATCRouterUnpatched(ARTCC_CENTERS)
+  const unpatchedRouter = new ATCRouterUnpatched(ALL_ARTCC_CENTERS, AFFECTED_TRANSIT_CENTERS)
   const TOTAL_PACKETS = 1000
 
   for (let i = 1; i <= TOTAL_PACKETS; i++) {
@@ -49,17 +55,17 @@ async function run() {
 
   console.log(`  - Dispatched Packets: ${TOTAL_PACKETS}`)
   console.log(`  - Dropped Packets: ${unpatchedRouter.droppedPackets} (${(unpatchedRouter.droppedPackets / TOTAL_PACKETS * 100).toFixed(1)}% loss)`)
-  console.log(`  - Desynchronized ARTCC Centers: ${desyncedCenters.length} of ${ARTCC_CENTERS.length}`)
+  console.log(`  - Desynchronized ARTCC Centers: ${desyncedCenters.length} of ${ALL_ARTCC_CENTERS.length}`)
 
   assert.strictEqual(unpatchedRouter.droppedPackets, 950, 'Buffer must overflow and drop exactly 950 packets')
-  assert.strictEqual(desyncedCenters.length, 17, 'All 17 ARTCC centers must desynchronize under unpatched router')
+  assert.strictEqual(desyncedCenters.length, 17, '17 transit-connected ARTCC centers must desynchronize under unpatched router')
   console.log('  -> [VERIFIED FAILURE] Unpatched ERAM router reproduces nationwide state drift.')
 
   // --------------------------------------------------------------------------
   // PHASE 2: NATIVE CODE PATCH VERIFICATION
   // --------------------------------------------------------------------------
   console.log('\n[PHASE 2] Executing Patched Component Verification (Token Bucket + Fences)...')
-  const patchedRouter = new ATCRouterPatched(ARTCC_CENTERS)
+  const patchedRouter = new ATCRouterPatched(ALL_ARTCC_CENTERS)
 
   for (let i = 1; i <= TOTAL_PACKETS; i++) {
     const update: FlightStripUpdate = {
@@ -77,7 +83,7 @@ async function run() {
 
   console.log(`  - Dispatched Packets: ${TOTAL_PACKETS}`)
   console.log(`  - Dropped Packets: ${patchedRouter.droppedPackets}`)
-  console.log(`  - Desynchronized ARTCC Centers: ${patchedDesynced.length} of ${ARTCC_CENTERS.length}`)
+  console.log(`  - Desynchronized ARTCC Centers: ${patchedDesynced.length} of ${ALL_ARTCC_CENTERS.length}`)
 
   assert.strictEqual(patchedRouter.droppedPackets, 0, 'Patched router must not silently drop flight strips')
   assert.strictEqual(patchedDesynced.length, 0, 'Zero ARTCC centers desynchronized under patched router')
@@ -108,7 +114,7 @@ async function run() {
   assert.strictEqual(verifyResult.status, 'NO_FAILURE_WITHIN_BOUND', 'Must find zero invariant violations within bound')
 
   console.log('\n' + '='.repeat(78))
-  console.log(' PROVER COMPLETE: NATIVE CODE & DISTRIB STATE-SPACE PROOF 100% VERIFIED')
+  console.log(' BOUNDED VERIFICATION COMPLETE: NATIVE CODE & STATE-SPACE PROOF CONFIRMED')
   console.log('='.repeat(78))
 }
 
