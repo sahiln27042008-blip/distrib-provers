@@ -19,7 +19,7 @@ import { runAuditOnConfig, runVerifyOnConfig } from '../../../packages/distrib-c
 
 async function run() {
   console.log('='.repeat(78))
-  console.log(' DISTRIB REPRODUCIBLE PROVER: JPMC ZELLE CROSS-BANK DISRUPTION (Nov 16, 2026)')
+  console.log(' BOUNDED SETTLEMENT PROVER: JPMC ZELLE CROSS-BANK DISRUPTION (Nov 16, 2026)')
   console.log('='.repeat(78))
 
   const INITIAL_BALANCE = 2000
@@ -46,6 +46,7 @@ async function run() {
   }
 
   // Attempt 1: Dispatched to Chase, hangs in-doubt
+  console.log(`  - Starting Sender Account Balance: $${INITIAL_BALANCE}`)
   const res1 = unpatchedBridge.processTransfer({ ...transfer, retryCount: 0 })
   console.log(`  - Attempt 1 (Initial): Success=${res1.success}, InDoubt=${res1.inDoubt}`)
 
@@ -79,6 +80,7 @@ async function run() {
   }
 
   // Attempt 1: First attempt
+  console.log(`  - Starting Sender Account Balance: $${INITIAL_BALANCE}`)
   const pRes1 = patchedBridge.processTransfer({ ...patchedTransfer, retryCount: 0 })
   console.log(`  - Attempt 1: Success=${pRes1.success}, InDoubt=${pRes1.inDoubt}, Deduplicated=${pRes1.deduplicated}`)
 
@@ -103,7 +105,7 @@ async function run() {
   // --------------------------------------------------------------------------
   // PHASE 3: DISTRIB FORMAL STATE-SPACE PROOF
   // --------------------------------------------------------------------------
-  console.log('\n[PHASE 3] Running Formal Exhaustive State-Space Verification...')
+  console.log('\n[PHASE 3] Running Formal Bounded State-Space Verification...')
   const configPath = resolve(import.meta.dirname, '../baseline.config.json')
 
   // Step 3a: Audit Baseline
@@ -125,7 +127,7 @@ async function run() {
   assert.strictEqual(verifyResult.status, 'NO_FAILURE_WITHIN_BOUND', 'Must find zero invariant violations within bound')
 
   console.log('\n' + '='.repeat(78))
-  console.log(' PROVER COMPLETE: NATIVE CODE & DISTRIB STATE-SPACE PROOF 100% VERIFIED')
+  console.log(' BOUNDED VERIFICATION COMPLETE: NATIVE CODE & STATE-SPACE PROOF CONFIRMED')
   console.log('='.repeat(78))
 }
 
