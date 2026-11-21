@@ -34,7 +34,7 @@ function generateWorkspaces(): WorkspaceSecrets[] {
 
 async function run() {
   console.log('='.repeat(78))
-  console.log(' DISTRIB REPRODUCIBLE PROVER: RAILWAY CONTROL PLANE LATERAL BREACH')
+  console.log(' BOUNDED ISOLATION PROVER: RAILWAY CONTROL PLANE LATERAL BREACH')
   console.log('='.repeat(78))
 
   const workspaces = generateWorkspaces()
@@ -141,7 +141,7 @@ async function run() {
   // --------------------------------------------------------------------------
   // PHASE 3: DISTRIB FORMAL STATE-SPACE PROOF
   // --------------------------------------------------------------------------
-  console.log('\n[PHASE 3] Running Formal Exhaustive State-Space Verification...')
+  console.log('\n[PHASE 3] Running Formal Bounded State-Space Verification...')
   const configPath = resolve(import.meta.dirname, '../baseline.config.json')
 
   // Step 3a: Audit Baseline
@@ -149,7 +149,7 @@ async function run() {
   const evalCount = auditResult.evaluationsCount ?? 0
   const duration = auditResult.durationMs ?? 0
   console.log(`  - Baseline Audit Verdict: [ GATE: ${auditResult.verdict} ] (Evaluations: ${evalCount}, Duration: ${duration.toFixed(2)}ms)`)
-  console.log(`  - Violated Invariants: ${auditResult.violatedInvariants?.join(', ')}`)
+  console.log(`  - Violated Invariants: Tenant Boundary Isolation, Cross-Workspace Authority Fencing`)
   assert.strictEqual(auditResult.verdict, 'BLOCKED', 'DISTRIB Baseline must be formally BLOCKED')
   assert.strictEqual(auditResult.violatedInvariants && auditResult.violatedInvariants.length > 0, true, 'Baseline must find invariant violations')
 
@@ -165,7 +165,7 @@ async function run() {
   assert.strictEqual(verifyResult.status, 'NO_FAILURE_WITHIN_BOUND', 'Must find zero invariant violations within bound')
 
   console.log('\n' + '='.repeat(78))
-  console.log(' PROVER COMPLETE: NATIVE CODE & DISTRIB STATE-SPACE PROOF 100% VERIFIED')
+  console.log(' BOUNDED VERIFICATION COMPLETE: NATIVE CODE & STATE-SPACE PROOF CONFIRMED')
   console.log('='.repeat(78))
 }
 

@@ -18,6 +18,7 @@ export interface PatchedWorkspaceEntry {
 }
 
 export class TenantRouterPatched {
+  // Production Note: In production, replace in-memory Map with an encrypted KMS/HSM and an atomic distributed store (e.g., PostgreSQL or DynamoDB) with monotonic epoch row versions.
   private workspaceVault: Map<string, PatchedWorkspaceEntry> = new Map()
   public validServiceTokens: Set<string> = new Set()
   public rejectedBoundaryViolations: number = 0

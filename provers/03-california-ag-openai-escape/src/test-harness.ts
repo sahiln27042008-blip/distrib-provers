@@ -17,7 +17,7 @@ import { runAuditOnConfig, runVerifyOnConfig } from '../../../packages/distrib-c
 
 async function run() {
   console.log('='.repeat(78))
-  console.log(' DISTRIB REPRODUCIBLE PROVER: CALIFORNIA AG v. OPENAI AGENT ESCAPE (Nov 16, 2026)')
+  console.log(' BOUNDED SANDBOX PROVER: CALIFORNIA AG v. OPENAI AGENT ESCAPE (Nov 16, 2026)')
   console.log('='.repeat(78))
 
   // --------------------------------------------------------------------------
@@ -80,7 +80,7 @@ async function run() {
   // --------------------------------------------------------------------------
   // PHASE 3: DISTRIB FORMAL STATE-SPACE PROOF
   // --------------------------------------------------------------------------
-  console.log('\n[PHASE 3] Running Formal Exhaustive State-Space Verification...')
+  console.log('\n[PHASE 3] Running Formal Bounded State-Space Verification...')
   const configPath = resolve(import.meta.dirname, '../baseline.config.json')
 
   // Step 3a: Audit Baseline
@@ -102,7 +102,7 @@ async function run() {
   assert.strictEqual(verifyResult.status, 'NO_FAILURE_WITHIN_BOUND', 'Must find zero invariant violations within bound')
 
   console.log('\n' + '='.repeat(78))
-  console.log(' PROVER COMPLETE: NATIVE CODE & DISTRIB STATE-SPACE PROOF 100% VERIFIED')
+  console.log(' BOUNDED VERIFICATION COMPLETE: NATIVE CODE & STATE-SPACE PROOF CONFIRMED')
   console.log('='.repeat(78))
 }
 
