@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/pocketos-ai-database-wipe",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for PocketOS 9-Second AI Agent Database Wipe & Deterministic Invariant Governance",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

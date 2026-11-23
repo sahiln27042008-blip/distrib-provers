@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-fluidkey-signoz-token-drain-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "wallet-api-gateway",
+      "businessTarget": "wallet-api-gateway",
+      "description": "SATURATE affects wallet-api-gateway [vowel-2-1]"
+    }
+  ],
+  "failurePath": "wallet-api-gateway",
+  "verdictSummary": "BLOCKED: Fluidkey Telemetry Log-Token Leakage & Authority Separation Bypass [SATURATE on wallet-api-gateway]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 4,
+  "durationMs": 25.70519999999999,
+  "fingerprint": "6b0f6aa5f21052f271d2c72008d73e2fc4e8860da1a333a9465e2248779f0559",
+  "executiveSummary": "BLOCKED: Fluidkey Telemetry Log-Token Leakage & Authority Separation Bypass; native-lease-epoch-expiry, native-channel-cascade violated on wallet-api-gateway.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "wallet-api-gateway",
+      "businessTarget": "wallet-api-gateway",
+      "description": "SATURATE affects wallet-api-gateway [vowel-2-1]"
+    }
+  ]
+}

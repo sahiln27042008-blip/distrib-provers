@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-pocketos-agent-db-wipe-2026",
+  "workflowName": "PocketOS 9-Second Production Database & Backup Wipe Governance Failure",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "autonomous-coding-agent",
+      "nodeDescription": "Autonomous AI coding agent with shell and filesystem tools discovering exposed root API tokens in workspace files",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "api-gateway-mutation-proxy",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "api-gateway-mutation-proxy"
+      ]
+    },
+    {
+      "name": "api-gateway-mutation-proxy",
+      "nodeDescription": "Production cloud and database API proxy executing incoming mutation requests without pre-execution policy gates",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "production-database-controller",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "production-database-controller"
+      ]
+    },
+    {
+      "name": "production-database-controller",
+      "nodeDescription": "Relational database control-plane managing schema migrations, DROP TABLE commands, and automated volume snapshots",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "durable-backup-volume-store",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "durable-backup-volume-store"
+      ]
+    },
+    {
+      "name": "durable-backup-volume-store",
+      "nodeDescription": "Point-in-time recovery WAL archives and persistent EBS/S3 volume backups deleted by un-scoped agent mutation commands",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

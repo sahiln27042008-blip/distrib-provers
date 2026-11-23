@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/playstation-thundering-herd",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for PlayStation Network GTA VI Pre-Launch Mandatory Update Thundering Herd",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

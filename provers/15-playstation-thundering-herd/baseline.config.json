@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-playstation-thundering-herd-2026",
+  "workflowName": "PlayStation Network Pre-Launch Mandatory Update Thundering Herd & Auth Cascade",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "global-console-fleet-herd",
+      "nodeDescription": "Tens of millions of PS5 consoles simultaneously fetching mandatory pre-launch OS updates and game license tokens",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "psn-shared-ingress-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "psn-shared-ingress-gateway"
+      ]
+    },
+    {
+      "name": "psn-shared-ingress-gateway",
+      "nodeDescription": "Shared PSN edge API gateway handling heavy firmware download chunks and critical account authentication on common ingress pools",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "core-entitlement-auth-service",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "core-entitlement-auth-service"
+      ]
+    },
+    {
+      "name": "core-entitlement-auth-service",
+      "nodeDescription": "Central entitlement verification cluster validating digital ownership and game launching privileges",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "legacy-console-services-cluster",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "legacy-console-services-cluster"
+      ]
+    },
+    {
+      "name": "legacy-console-services-cluster",
+      "nodeDescription": "Unrelated platforms (PS3, PS4, PS Vita, and Cloud Game Streaming) starved by shared ingress queue saturation",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

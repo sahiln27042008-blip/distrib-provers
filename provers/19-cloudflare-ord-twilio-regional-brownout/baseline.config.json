@@ -1,0 +1,137 @@
+{
+  "workflowId": "wf-cloudflare-ord-twilio-brownout-2026",
+  "workflowName": "Cloudflare Chicago ORD Edge Degradation & Twilio Regional Carrier Brownout",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "regional-client-workloads",
+      "nodeDescription": "Regional client applications and autonomous agents originating traffic in Chicago, Canada, and Germany",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "global-synthetic-healthcheck",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "global-synthetic-healthcheck"
+      ]
+    },
+    {
+      "name": "global-synthetic-healthcheck",
+      "nodeDescription": "Central synthetic monitoring endpoint probing primary backbone nodes and reporting global green HTTP 200 OK",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "cloudflare-ord-pop",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "cloudflare-ord-pop"
+      ]
+    },
+    {
+      "name": "cloudflare-ord-pop",
+      "nodeDescription": "Degraded Chicago ORD point-of-presence dropping packets while central probes remain green",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "twilio-carrier-mesh",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "CORRUPT",
+          "params": {
+            "mode": "SCHEMA_DRIFT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "twilio-carrier-mesh"
+      ]
+    },
+    {
+      "name": "twilio-carrier-mesh",
+      "nodeDescription": "Regional carrier routing network experiencing Canadian lookup spikes and German SMS delivery drops",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "byzantine-brownout-sink",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "byzantine-brownout-sink"
+      ]
+    },
+    {
+      "name": "byzantine-brownout-sink",
+      "nodeDescription": "Silent packet loss sink swallowing regional traffic while global dashboards show all systems operational",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "regional-client-workloads",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": [
+        "regional-client-workloads"
+      ]
+    }
+  ]
+}

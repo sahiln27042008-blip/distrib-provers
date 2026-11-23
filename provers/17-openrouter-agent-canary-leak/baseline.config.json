@@ -1,0 +1,155 @@
+{
+  "workflowId": "wf-openrouter-agent-canary-leak-2026",
+  "workflowName": "OpenRouter Canary Prompt Breach & AI Agent Public Git Secret Leakage",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "client-prompt-egress",
+      "nodeDescription": "Enterprise clients and automated agents dispatching LLM prompts with Zero Data Retention (ZDR) flags",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "ai-aggregator-router",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "ai-aggregator-router"
+      ]
+    },
+    {
+      "name": "ai-aggregator-router",
+      "nodeDescription": "Multi-hop AI marketplace router routing inference across third-party reseller providers",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "untrusted-reseller-provider",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "untrusted-reseller-provider"
+      ]
+    },
+    {
+      "name": "untrusted-reseller-provider",
+      "nodeDescription": "Third-party inference reseller that violates ZDR flags and persists raw prompts to telemetry logs",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "byzantine-adversary-collector",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "CORRUPT",
+          "params": {
+            "mode": "SCHEMA_DRIFT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "byzantine-adversary-collector"
+      ]
+    },
+    {
+      "name": "autonomous-coding-agent",
+      "nodeDescription": "Autonomous coding agent pushing automated commits with un-sanitized repository diffs",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "public-git-repo",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "public-git-repo"
+      ]
+    },
+    {
+      "name": "public-git-repo",
+      "nodeDescription": "Public GitHub repository receiving un-screened automated commits",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "byzantine-adversary-collector",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": [
+        "byzantine-adversary-collector"
+      ]
+    },
+    {
+      "name": "byzantine-adversary-collector",
+      "nodeDescription": "Attacker monitoring public git commits and unverified reseller logs to harvest canary tokens and private repo keys",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "client-prompt-egress",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": [
+        "client-prompt-egress"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/github-copilot-model-outage",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for GitHub Copilot GPT-6 Luna Upstream Model Outage & Autonomous Agent Inference Failover",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "workflowId": "wf-fluidkey-signoz-token-drain-2026",
+  "workflowName": "Fluidkey Telemetry Log-Token Leakage & Authority Separation Bypass",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "wallet-client-traffic",
+      "nodeDescription": "User mobile wallet requests checking balances and transaction status",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "wallet-api-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "wallet-api-gateway"
+      ]
+    },
+    {
+      "name": "wallet-api-gateway",
+      "nodeDescription": "Public API gateway logging raw headers and unredacted session tokens to telemetry",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "wallet-account-service",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "wallet-account-service"
+      ]
+    },
+    {
+      "name": "wallet-account-service",
+      "nodeDescription": "Core ledger and transfer management service lacking dual-custody verification",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "signoz-collector-clickhouse",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": [
+        "signoz-collector-clickhouse"
+      ]
+    },
+    {
+      "name": "signoz-collector-clickhouse",
+      "nodeDescription": "Self-hosted SigNoz v0.121.1 telemetry collector and ClickHouse trace store with CVE-2026-92729 / CVE-2026-93292",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "byzantine-attacker-extractor",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "CORRUPT",
+          "params": {
+            "mode": "SCHEMA_DRIFT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "byzantine-attacker-extractor"
+      ]
+    },
+    {
+      "name": "byzantine-attacker-extractor",
+      "nodeDescription": "Adversary exploiting unauthenticated SigNoz funnel API and SQL injection to harvest bearer tokens and stage drains",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "wallet-api-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "wallet-api-gateway"
+      ]
+    }
+  ]
+}

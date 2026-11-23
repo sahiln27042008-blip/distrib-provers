@@ -18,7 +18,16 @@
     "test:studio": "cd provers/07-google-ai-studio-sse-drops && node src/test-harness.ts",
     "test:airbyte": "cd provers/08-airbyte-cloud-blackout && node src/test-harness.ts",
     "test:i3dnet": "cd provers/09-i3dnet-montreal-partition && node src/test-harness.ts",
-    "test:railway": "cd provers/10-railway-controlplane-isolation && node src/test-harness.ts"
+    "test:railway": "cd provers/10-railway-controlplane-isolation && node src/test-harness.ts",
+    "test:cloudflare": "cd provers/11-cloudflare-durable-objects-outage && node src/test-harness.ts",
+    "test:copilot": "cd provers/12-github-copilot-model-outage && node src/test-harness.ts",
+    "test:aws": "cd provers/13-aws-iam-sso-nlb-blackhole && node src/test-harness.ts",
+    "test:pocketos": "cd provers/14-pocketos-ai-database-wipe && node src/test-harness.ts",
+    "test:psn": "cd provers/15-playstation-thundering-herd && node src/test-harness.ts",
+    "test:fluidkey": "cd provers/16-fluidkey-signoz-token-drain && node src/test-harness.ts",
+    "test:openrouter": "cd provers/17-openrouter-agent-canary-leak && node src/test-harness.ts",
+    "test:claude": "cd provers/18-claude-code-cascade-auth-outage && node src/test-harness.ts",
+    "test:regional": "cd provers/19-cloudflare-ord-twilio-regional-brownout && node src/test-harness.ts"
   },
   "keywords": [
     "distributed-systems",

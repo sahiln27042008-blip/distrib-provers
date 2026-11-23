@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-cloudflare-durable-objects-storage-stall-2026",
+  "workflowName": "Cloudflare Durable Objects & D1 Storage Stall with Ingress Worker Decoupling",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-channel-cascade",
+    "native-lease-epoch-expiry"
+  ],
+  "nodes": [
+    {
+      "name": "autonomous-agent-client-fleet",
+      "nodeDescription": "Global fleet of autonomous AI agents and client SDKs submitting stateful session mutations and transactional actor queries",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "cloudflare-edge-stateless-worker",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "cloudflare-edge-stateless-worker"
+      ]
+    },
+    {
+      "name": "cloudflare-edge-stateless-worker",
+      "nodeDescription": "Edge Cloudflare Workers receiving client requests, terminating TLS with HTTP 200 OK, and forwarding state calls to collocated Durable Object instances",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "cloudflare-durable-object-actor",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "cloudflare-durable-object-actor"
+      ]
+    },
+    {
+      "name": "cloudflare-durable-object-actor",
+      "nodeDescription": "Single-tenant Durable Object actor executing in-memory coordination, holding locks, and executing persistent storage transactions",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "cloudflare-d1-storage-subsystem",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "POST_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "cloudflare-d1-storage-subsystem"
+      ]
+    },
+    {
+      "name": "cloudflare-d1-storage-subsystem",
+      "nodeDescription": "Backing distributed SQLite D1 and Durable Object storage engine experiencing elevated write latencies and write operation rejections",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

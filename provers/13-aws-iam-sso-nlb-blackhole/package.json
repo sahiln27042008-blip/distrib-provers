@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/aws-iam-sso-nlb-blackhole",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for AWS us-east-1 IAM Identity Center Dependency Loop & Single-AZ NLB Cell Blackhole",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}

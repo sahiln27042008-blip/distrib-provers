@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-copilot-model-failover-collapse-2026",
+  "workflowName": "GitHub Copilot Upstream Model Provider Outage & Autonomous Agent Inference Stall",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "autonomous-dev-agent-pool",
+      "nodeDescription": "Background autonomous coding agents and IDE copilot surfaces dispatching multi-turn code generation and review prompts",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "copilot-inference-gateway",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "copilot-inference-gateway"
+      ]
+    },
+    {
+      "name": "copilot-inference-gateway",
+      "nodeDescription": "GitHub Copilot API ingress and routing layer dispatching prompt requests to configured model endpoints",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "primary-upstream-provider-luna",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "primary-upstream-provider-luna"
+      ]
+    },
+    {
+      "name": "primary-upstream-provider-luna",
+      "nodeDescription": "Primary upstream cloud provider hosting GPT-6 Luna weights experiencing severe backend latency degradation and dropped streams",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "backup-inference-cluster",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "backup-inference-cluster"
+      ]
+    },
+    {
+      "name": "backup-inference-cluster",
+      "nodeDescription": "Secondary fallback inference clusters (e.g. Fusion, GPT-5 Turbo, Claude 3.5 Sonnet) available for automatic routing",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

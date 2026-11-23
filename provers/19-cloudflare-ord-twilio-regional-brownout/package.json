@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/cloudflare-ord-twilio-regional-brownout",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: Cloudflare Chicago ORD & Twilio Regional API Brownout",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

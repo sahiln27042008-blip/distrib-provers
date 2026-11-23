@@ -1,0 +1,26 @@
+{
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-cloudflare-durable-objects-storage-stall-2026",
+  "shortestDepth": 1,
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "cloudflare-edge-stateless-worker",
+      "businessTarget": "cloudflare-edge-stateless-worker",
+      "description": "SATURATE affects cloudflare-edge-stateless-worker [vowel-2-1]"
+    }
+  ],
+  "evaluationsCount": 3,
+  "durationMs": 328.3113000000001,
+  "executiveSummary": "BLOCKED: Cloudflare Durable Objects & D1 Storage Stall with Ingress Worker Decoupling; native-lease-epoch-expiry, native-channel-cascade violated on cloudflare-edge-stateless-worker.",
+  "findings": []
+}

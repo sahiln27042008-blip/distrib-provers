@@ -1,0 +1,117 @@
+{
+  "workflowId": "wf-aws-iam-sso-nlb-cell-outage-2026",
+  "workflowName": "AWS us-east-1 IAM Identity Center Control-Plane Lockout & Single-AZ NLB Blackhole",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "enterprise-sso-client-workloads",
+      "nodeDescription": "Engineering operator CLI/Console sessions and automated AI agents attempting IAM Identity Center SSO authentication",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "aws-iam-identity-center-sso",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "aws-iam-identity-center-sso"
+      ]
+    },
+    {
+      "name": "aws-iam-identity-center-sso",
+      "nodeDescription": "AWS IAM Identity Center control-plane service issuing temporary STS tokens, dependent on internal data plane routing",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "single-az-nlb-ingress-cell",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "single-az-nlb-ingress-cell"
+      ]
+    },
+    {
+      "name": "single-az-nlb-ingress-cell",
+      "nodeDescription": "Single-cell Network Load Balancer pinned to use1-az1 experiencing routing blackhole and dropped SYN packets",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 20,
+            "ttlMs": 10000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "downstream-regional-data-plane",
+            "timeoutMs": 10000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "downstream-regional-data-plane"
+      ]
+    },
+    {
+      "name": "downstream-regional-data-plane",
+      "nodeDescription": "Regional data-plane services (Step Functions, OpenSearch, VPC Lattice) partitioned by single-cell NLB failure",
+      "substrates": [
+        {
+          "vowel": "REGISTER",
+          "params": {
+            "persistence": "DURABLE"
+          }
+        }
+      ],
+      "outboundEdges": []
+    }
+  ],
+  "seed": 42817,
+  "maxDepth": 2
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/openrouter-agent-canary-leak",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: OpenRouter Canary Breach & Autonomous Agent Secret Commit",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/fluidkey-signoz-token-drain",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: Fluidkey $1.6M Drain via Unpatched SigNoz & Log-Token Leakage",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

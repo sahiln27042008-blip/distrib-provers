@@ -1,0 +1,137 @@
+{
+  "workflowId": "wf-claude-code-cascade-auth-outage-2026",
+  "workflowName": "Claude Code Auth Service Outage & Multi-Service Agent Cascade Risk",
+  "declaredInvariants": [
+    "native-channel-cascade",
+    "native-lease-epoch-expiry",
+    "r04-network-idempotency"
+  ],
+  "nodes": [
+    {
+      "name": "claude-code-agent-client",
+      "nodeDescription": "Autonomous coding agents and developer CLI sessions requesting tool execution and cross-service code mutations",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "code-auth-microservice",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "DUPLICATE",
+          "params": {
+            "count": 4
+          }
+        }
+      ],
+      "outboundEdges": [
+        "code-auth-microservice"
+      ]
+    },
+    {
+      "name": "code-auth-microservice",
+      "nodeDescription": "Central code authentication microservice verifying agent session tokens and tool execution permissions",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 50,
+            "ttlMs": 5000,
+            "overflowPolicy": "WAIT_TIMEOUT"
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "container-execution-runtime",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SATURATE",
+          "params": {
+            "loadUnits": 50
+          }
+        }
+      ],
+      "outboundEdges": [
+        "container-execution-runtime"
+      ]
+    },
+    {
+      "name": "container-execution-runtime",
+      "nodeDescription": "Sandboxed container execution tier running developer code and automated agent edits",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "multi-service-dependency-mesh",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": [
+        "multi-service-dependency-mesh"
+      ]
+    },
+    {
+      "name": "multi-service-dependency-mesh",
+      "nodeDescription": "20 enterprise microservices receiving simultaneous pattern-matched edits without staged canary deployment",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "byzantine-cascade-trigger",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "CORRUPT",
+          "params": {
+            "mode": "SCHEMA_DRIFT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "byzantine-cascade-trigger"
+      ]
+    },
+    {
+      "name": "byzantine-cascade-trigger",
+      "nodeDescription": "Cascading failure propagating across microservices when agent unbacked pattern changes collapse dependencies",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "claude-code-agent-client",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        {
+          "kind": "SEVER",
+          "params": {
+            "phase": "PRE_COMMIT"
+          }
+        }
+      ],
+      "outboundEdges": [
+        "claude-code-agent-client"
+      ]
+    }
+  ]
+}

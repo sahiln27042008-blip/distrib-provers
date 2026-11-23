@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-claude-code-cascade-auth-outage-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "code-auth-microservice",
+      "businessTarget": "code-auth-microservice",
+      "description": "SATURATE affects code-auth-microservice [vowel-2-1]"
+    }
+  ],
+  "failurePath": "code-auth-microservice",
+  "verdictSummary": "BLOCKED: Claude Code Auth Service Outage & Multi-Service Agent Cascade Risk [SATURATE on code-auth-microservice]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 4,
+  "durationMs": 31.013900000000007,
+  "fingerprint": "7829bf47d7fce85f7b7066d9949c8963d93939c2241e1532456a1566b7be3936",
+  "executiveSummary": "BLOCKED: Claude Code Auth Service Outage & Multi-Service Agent Cascade Risk; native-lease-epoch-expiry, native-channel-cascade violated on code-auth-microservice.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "code-auth-microservice",
+      "businessTarget": "code-auth-microservice",
+      "description": "SATURATE affects code-auth-microservice [vowel-2-1]"
+    }
+  ]
+}

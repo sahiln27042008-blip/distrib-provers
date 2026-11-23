@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/claude-code-cascade-auth-outage",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: Claude Code Auth Paralysis & Multi-Service Cascade",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

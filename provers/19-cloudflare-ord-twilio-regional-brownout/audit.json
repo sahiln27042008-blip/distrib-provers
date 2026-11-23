@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-cloudflare-ord-twilio-brownout-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "global-synthetic-healthcheck",
+      "businessTarget": "global-synthetic-healthcheck",
+      "description": "SATURATE affects global-synthetic-healthcheck [vowel-2-1]"
+    }
+  ],
+  "failurePath": "global-synthetic-healthcheck",
+  "verdictSummary": "BLOCKED: Cloudflare Chicago ORD Edge Degradation & Twilio Regional Carrier Brownout [SATURATE on global-synthetic-healthcheck]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 4,
+  "durationMs": 29.901399999999995,
+  "fingerprint": "85436e8179f4cd62b170f9780641d44ba34be906ff200101d6a11c8cac4138af",
+  "executiveSummary": "BLOCKED: Cloudflare Chicago ORD Edge Degradation & Twilio Regional Carrier Brownout; native-lease-epoch-expiry, native-channel-cascade violated on global-synthetic-healthcheck.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "global-synthetic-healthcheck",
+      "businessTarget": "global-synthetic-healthcheck",
+      "description": "SATURATE affects global-synthetic-healthcheck [vowel-2-1]"
+    }
+  ]
+}

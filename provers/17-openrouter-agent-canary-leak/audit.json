@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "verdict": "BLOCKED",
+  "status": "FAILURE_FOUND",
+  "scenarioId": "wf-openrouter-agent-canary-leak-2026",
+  "shortestDepth": 1,
+  "minimalCounterexample": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "ai-aggregator-router",
+      "businessTarget": "ai-aggregator-router",
+      "description": "SATURATE affects ai-aggregator-router [vowel-2-1]"
+    }
+  ],
+  "failurePath": "ai-aggregator-router",
+  "verdictSummary": "BLOCKED: OpenRouter Canary Prompt Breach & AI Agent Public Git Secret Leakage [SATURATE on ai-aggregator-router]",
+  "violatedInvariants": [
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "evaluationsCount": 4,
+  "durationMs": 28.65009999999998,
+  "fingerprint": "52ef367a2cad54d2e179a297eb756c0135f95d95194ac5fe4016363359ac0b33",
+  "executiveSummary": "BLOCKED: OpenRouter Canary Prompt Breach & AI Agent Public Git Secret Leakage; native-lease-epoch-expiry, native-channel-cascade violated on ai-aggregator-router.",
+  "graphCompleteness": {
+    "complete": true,
+    "unresolvedEdges": []
+  },
+  "counterexampleSummary": [
+    {
+      "consonantKind": "SATURATE",
+      "targetVowelId": "vowel-2-1",
+      "params": {
+        "loadUnits": 50
+      },
+      "targetName": "ai-aggregator-router",
+      "businessTarget": "ai-aggregator-router",
+      "description": "SATURATE affects ai-aggregator-router [vowel-2-1]"
+    }
+  ]
+}

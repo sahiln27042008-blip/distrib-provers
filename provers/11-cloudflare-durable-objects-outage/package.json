@@ -1,0 +1,9 @@
+{
+  "name": "@distrib-prover/cloudflare-durable-objects-outage",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Reproducible Prover for Cloudflare Durable Objects & D1 Elevated Storage Errors with Stateless Ingress Decoupling",
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  }
+}
