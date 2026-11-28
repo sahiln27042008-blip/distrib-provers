@@ -3,7 +3,7 @@ import { createOrchestrator } from "../llm/meta-client.ts";
 import { SYSTEM_PROMPT } from "../llm/prompts.ts";
 import { associateWorkflowWithSession, getWorkflow, isWorkflowOwnedBySession, listWorkflows } from "../compiler/workflow-store.ts";
 
-const DEFAULT_MAX_ITERATIONS = 6;
+const DEFAULT_MAX_ITERATIONS = 16;
 const configuredMaxIterations = Number(process.env.MAX_AGENT_ITERATIONS);
 const MAX_ITERATIONS = Number.isFinite(configuredMaxIterations) && configuredMaxIterations > 0
   ? Math.min(Math.floor(configuredMaxIterations), DEFAULT_MAX_ITERATIONS)
@@ -105,6 +105,7 @@ export async function runAgentLoop(opts: {
   let lastToolName = "";
   let lastArgsSig = "";
   let consecutiveSameToolCalls = 0;
+  let didNudgePrematureBailout = false;
 
   function stableStringify(value: unknown): string {
     if (value === undefined) return "undefined";
@@ -353,6 +354,29 @@ export async function runAgentLoop(opts: {
         messages.push({
           role: "user",
           content: "Now proceed to answer all requested questions in order thoroughly, rigorously, and quantitatively using the packet and findings.",
+        });
+        continue;
+      }
+
+      const isPrematureBailout =
+        allExecutedToolCalls.length === 0 &&
+        wantsExplicitTool &&
+        !didNudgePrematureBailout &&
+        !isFinalIteration &&
+        (/no architecture sweep|no failure check|sweep was not run|not run|cannot run|unable to run/i.test(finalText) &&
+          !/\?\s*$/.test(finalText));
+
+      if (isPrematureBailout) {
+        didNudgePrematureBailout = true;
+        console.log(`[AGENT_LOOP] Premature bailout detected with 0 tool calls. Nudging model to run tools or ask specific clarifying questions...`);
+        messages.push({
+          role: "assistant",
+          content: finalText,
+        });
+        messages.push({
+          role: "user",
+          content:
+            "Do not stop with 'no architecture sweep or failure check was run'. You have create_workflow, insert_node, and audit_workflow_reliability available. If the architecture is clear, declare explicit experimental assumptions for any unstated numeric defaults and run the tools now. Only reply without tools if you are asking specific clarifying questions about genuinely missing topology.",
         });
         continue;
       }

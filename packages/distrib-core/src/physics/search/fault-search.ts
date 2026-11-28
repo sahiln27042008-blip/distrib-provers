@@ -6,6 +6,8 @@ import type {
   FaultSearchResult,
 } from "./search-types.ts";
 import { executeFaultSequence } from "./execute-faults.ts";
+import { shrinkTrace } from "./trace-shrinker.ts";
+import { exploreStateGuided } from "./guided-explorer.ts";
 
 const DEFAULT_SEED = 1;
 const MAX_SEARCH_DEPTH = 64;
@@ -197,6 +199,23 @@ export async function searchFaults(
   options: FaultSearchOptions = {},
   seed = DEFAULT_SEED,
 ): Promise<FaultSearchResult> {
+  if (options.mode === "guided") {
+    return await exploreStateGuided(
+      graph,
+      {
+        maxDepth: options.maxDepth ?? 15,
+        maxEvaluations: options.maxEvaluations ?? 300,
+        checkQuiescence: options.checkQuiescence ?? true,
+        calmDownTicks: options.calmDownTicks,
+        replicaGroups: options.replicaGroups,
+        useSwarm: options.useSwarm,
+        enableBuggify: options.enableBuggify,
+        buggifyProbability: options.buggifyProbability,
+        enableProtocolTriggers: options.enableProtocolTriggers,
+      },
+      seed,
+    );
+  }
   const startedAt = performance.now();
   const requestedMaxDepth = options.maxDepth ?? 3;
   const requestedMaxEvaluations = options.maxEvaluations ?? 5000;
@@ -239,10 +258,31 @@ export async function searchFaults(
     };
   };
 
+  const enrichFindings = async (
+    sequence: ConsonantFault[],
+    findings: any[],
+  ): Promise<any[]> => {
+    const out: any[] = [];
+    for (const f of findings) {
+      const enriched = { ...f, seed };
+      if (sequence.length > 0 && f.status === "proven") {
+        const shrunk = await shrinkTrace(sequence, f, { graph, seed });
+        enriched.minimalSteps = shrunk.minimalSteps;
+        enriched.shrinkRatio = shrunk.shrinkRatio;
+      } else {
+        enriched.minimalSteps = sequence;
+        enriched.shrinkRatio = 1;
+      }
+      out.push(enriched);
+    }
+    return out;
+  };
+
   const baseline = await executeFaultSequence(graph, [], seed);
   evaluations++;
   if (baseline.violatedInvariants.length > 0) {
-    return makeResult("BASELINE_FAILURE", 0, baseline.violatedInvariants);
+    const enrichedBaseline = await enrichFindings([], baseline.findings);
+    return makeResult("BASELINE_FAILURE", 0, baseline.violatedInvariants, undefined, { allFindings: enrichedBaseline });
   }
 
   if (maxEvaluations <= evaluations) {
@@ -279,11 +319,13 @@ export async function searchFaults(
         evaluations++;
         if (execution.violatedInvariants.length > 0) {
           if (!isTargetPathSearch) {
+            const enrichedFindings = await enrichFindings(sequence, execution.findings);
             return makeResult(
               "FAILURE_FOUND",
               depth,
               execution.violatedInvariants,
               sequence,
+              { allFindings: enrichedFindings },
             );
           }
 
@@ -303,12 +345,14 @@ export async function searchFaults(
 
           if (matchesTarget) {
             // Found target path failure! Return shortest matching counterexample
+            const rawFindings = discoveredFailures.flatMap((f) => f.execution.findings);
+            const enrichedFindings = await enrichFindings(sequence, rawFindings);
             return makeResult(
               "FAILURE_FOUND",
               depth,
               execution.violatedInvariants,
               sequence,
-              { allFindings: discoveredFailures.flatMap((f) => f.execution.findings) },
+              { allFindings: enrichedFindings },
             );
           }
           // Continue searching until target path is reached or budget exhausted

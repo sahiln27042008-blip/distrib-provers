@@ -29,6 +29,14 @@ export interface Finding {
   };
   repro: string;
   suggested_fix: string;
+  minimalSteps?: Array<{
+    consonantKind: string;
+    targetVowelId: string;
+    params: Record<string, unknown>;
+    [key: string]: unknown;
+  }>;
+  shrinkRatio?: number;
+  seed?: number;
 }
 
 export interface SearchNode {
@@ -41,6 +49,14 @@ export interface FaultSearchOptions {
   maxEvaluations?: number;  // default 5000
   timeoutMs?: number;       // default 2000 — advisory only, do not make correctness depend on wall-clock
   targetPath?: string[];    // Target node IDs to reach in counterexample
+  mode?: "iddfs" | "guided";
+  checkQuiescence?: boolean;
+  calmDownTicks?: number;
+  replicaGroups?: string[][];
+  useSwarm?: boolean;
+  enableBuggify?: boolean;
+  buggifyProbability?: number;
+  enableProtocolTriggers?: boolean;
 }
 
 export type FaultSearchStatus =
@@ -60,6 +76,13 @@ export interface FaultSearchResult {
   deterministicFingerprint?: string;
   allFindings?: Finding[];
   targetPathNotice?: string;
+  uniqueStatesExplored?: number;
+  swarmProfile?: {
+    seed: number;
+    enabledAxes: string[];
+    disabledAxes: string[];
+    intensities: Record<string, number>;
+  };
 }
 
 export interface CliffSearchOptions {

@@ -16,4 +16,12 @@ export interface Finding {
   };
   repro: string;
   suggested_fix: string;
+  minimalSteps?: Array<{
+    consonantKind: string;
+    targetVowelId: string;
+    params: Record<string, unknown>;
+    [key: string]: unknown;
+  }>;
+  shrinkRatio?: number;
+  seed?: number;
 }

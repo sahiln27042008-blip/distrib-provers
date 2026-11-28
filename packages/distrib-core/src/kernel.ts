@@ -39,6 +39,8 @@ export interface SimLimits {
   maxEvents: number;
   maxPayloadBytes: number;
   maxSteps: number;
+  buggifyEnabled?: boolean;
+  buggifyProbability?: number;
 }
 
 export class Sim {
@@ -48,13 +50,37 @@ export class Sim {
   readonly services = new Map<string, string>(); // name -> kind
   readonly links = new Set<string>(); // "from>to", recorded when a call actually happens
   readonly limits: SimLimits;
+  readonly buggifyFired: string[] = [];
+  buggifyEnabled: boolean;
+  buggifyProbability: number;
   #q: Task[] = [];
   #seq = 0;
   #steps = 0;
+  #emitHooks: Array<(ev: SimEvent) => void> = [];
+  #inEmitHook = false;
 
   constructor(seed: number, limits: Partial<SimLimits> = {}) {
     this.rng = new Rng(seed);
     this.limits = { maxEvents: 2000, maxPayloadBytes: 4096, maxSteps: 10000, ...limits };
+    this.buggifyEnabled = limits.buggifyEnabled ?? false;
+    this.buggifyProbability = limits.buggifyProbability ?? 0.25;
+  }
+
+  /**
+   * FoundationDB-style deterministic boundary fault injection.
+   * Disabled by default so existing non-buggify runs consume identical RNG.
+   */
+  buggify(tag: string, probability?: number): boolean {
+    if (!this.buggifyEnabled) return false;
+    const p = this.buggifyProbability >= 1 ? 1 : (probability ?? this.buggifyProbability);
+    if (this.rng.next() < p) {
+      this.buggifyFired.push(tag);
+      if (this.log.length < this.limits.maxEvents - 10) {
+        this.emit("sim.buggify_fired", tag, { tag, t: this.now, probability: p });
+      }
+      return true;
+    }
+    return false;
   }
 
   register(name: string, kind: string): void {
@@ -76,6 +102,10 @@ export class Sim {
     this.#q.splice(i, 0, { t, seq: this.#seq++, label, fn });
   }
 
+  registerEmitHook(hook: (ev: SimEvent) => void): void {
+    this.#emitHooks.push(hook);
+  }
+
   emit(kind: string, corr: string, data: Data = {}, parent?: string): string {
     if (this.log.length >= this.limits.maxEvents) throw new LimitError(`event limit ${this.limits.maxEvents} reached`);
     if (JSON.stringify(data).length > this.limits.maxPayloadBytes) throw new LimitError(`payload over ${this.limits.maxPayloadBytes} bytes`);
@@ -83,6 +113,16 @@ export class Sim {
     const ev: SimEvent = { id, t: this.now, kind, corr, data };
     if (parent !== undefined) ev.parent = parent;
     this.log.push(ev);
+    if (!this.#inEmitHook && this.#emitHooks.length > 0) {
+      this.#inEmitHook = true;
+      try {
+        for (const hook of this.#emitHooks) {
+          hook(ev);
+        }
+      } finally {
+        this.#inEmitHook = false;
+      }
+    }
     return id;
   }
 

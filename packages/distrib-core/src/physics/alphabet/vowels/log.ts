@@ -59,6 +59,9 @@ export class Log implements Vowel {
 
   append(value: unknown, dedupKey?: string, callSim?: Sim): LogAppendResult {
     const activeSim = callSim ?? this.sim;
+    if (activeSim?.buggify("log.compact_lag_zero", 0.15)) {
+      this.compactionLagMs = 0;
+    }
     const now = activeSim?.now ?? 0;
 
     if (this.entries.length + 1 > this.maxCapacity) {

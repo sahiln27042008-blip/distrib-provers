@@ -3,4 +3,7 @@ export * from "./execute-faults.ts";
 export * from "./fault-search.ts";
 export * from "./cliff-finder.ts";
 export * from "./search-coordinator.ts";
-export * from "./search-coordinator.ts";
+export * from "./trace-shrinker.ts";
+export * from "./state-corpus.ts";
+export * from "./guided-explorer.ts";
+export * from "./swarm-profile.ts";

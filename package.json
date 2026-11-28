@@ -27,7 +27,12 @@
     "test:fluidkey": "cd provers/16-fluidkey-signoz-token-drain && node src/test-harness.ts",
     "test:openrouter": "cd provers/17-openrouter-agent-canary-leak && node src/test-harness.ts",
     "test:claude": "cd provers/18-claude-code-cascade-auth-outage && node src/test-harness.ts",
-    "test:regional": "cd provers/19-cloudflare-ord-twilio-regional-brownout && node src/test-harness.ts"
+    "test:regional": "cd provers/19-cloudflare-ord-twilio-regional-brownout && node src/test-harness.ts",
+    "test:hexpm": "cd provers/20-hexpm-deserialized-struct-rce && node src/test-harness.ts",
+    "test:rackspace": "cd provers/21-rackspace-spot-k8s-breach-shutdown && node src/test-harness.ts",
+    "test:apim": "cd provers/22-azure-apim-classic-credential-theft && node src/test-harness.ts",
+    "test:workers": "cd provers/23-cloudflare-workers-event-drop-omission && node src/test-harness.ts",
+    "test:spike": "cd provers/24-spike-sh-recursion-blackout && node src/test-harness.ts"
   },
   "keywords": [
     "distributed-systems",

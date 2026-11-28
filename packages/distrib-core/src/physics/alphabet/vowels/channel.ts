@@ -109,7 +109,8 @@ export class Channel implements Vowel {
     targetCell?: Cell,
     opts?: ChannelSendOpts,
   ): ChannelSendResult {
-    const delayMs = opts?.delayMs ?? 0;
+    const buggifyTimeout = sim.buggify("channel.force_immediate_timeout", 0.15);
+    const delayMs = buggifyTimeout ? Math.max(opts?.delayMs ?? 0, this.timeoutMs + 10) : (opts?.delayMs ?? 0);
     const severPhase = opts?.severPhase;
     const startTime = sim.now;
 

@@ -149,7 +149,11 @@ export class Lease implements Vowel {
       return { ok: true, acquiredEpoch: this.currentEpoch };
     }
 
-    if (this.currentLoad + 1 > this.maxCapacity) {
+    const effectiveCapacity = activeSim?.buggify("lease.shrink_capacity_to_1", 0.2)
+      ? 1
+      : this.maxCapacity;
+
+    if (this.currentLoad + 1 > effectiveCapacity) {
       if (this.overflowPolicy === "REJECT_429") {
         if (activeSim) {
           activeSim.emit("lease.rejected", this.id, {

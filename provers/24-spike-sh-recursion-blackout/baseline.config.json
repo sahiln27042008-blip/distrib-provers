@@ -1,0 +1,90 @@
+{
+  "workflowId": "wf-spike-sh-recursion-blackout-2026",
+  "workflowName": "Spike.sh API Outage (Recursive Rotation Loop + Lying Liveness Probe)",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "nodes": [
+    {
+      "name": "load-balancer",
+      "nodeDescription": "Ingress load balancer routing API & alert traffic to api-fleet",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "api-fleet",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "DELAY", "params": { "durationMs": 8000 } }
+      ],
+      "outboundEdges": ["api-fleet"]
+    },
+    {
+      "name": "api-fleet",
+      "nodeDescription": "API worker pool executing shift-rotation calculation; holds worker lease during recursive loop",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 8,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT",
+            "heldDuringExternalChannel": true
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "rotation-scheduler",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "SATURATE", "params": { "loadUnits": 16 } }
+      ],
+      "outboundEdges": ["rotation-scheduler"]
+    },
+    {
+      "name": "rotation-scheduler",
+      "nodeDescription": "On-call shift-rotation calculator triggered by poison-pill stress job; writes alert state",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "alert-store",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "DUPLICATE", "params": { "count": 4 } }
+      ],
+      "outboundEdges": ["alert-store"]
+    },
+    {
+      "name": "alert-store",
+      "nodeDescription": "Durable incident & shift-rotation state store",
+      "substrates": [
+        {
+          "vowel": "CELL",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false,
+            "fencingTokenEnforced": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": []
+    }
+  ]
+}

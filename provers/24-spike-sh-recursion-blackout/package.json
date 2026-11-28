@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/spike-sh-recursion-blackout",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: Spike.sh API Outage via Recursive Shift-Rotation Loop & Lying Health Checks",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

@@ -23,6 +23,7 @@ import { causalCliffTool } from "./tools/causal-cliff.ts";
 import { causalVerifyTool } from "./tools/causal-verify.ts";
 import { createWorkflowTool } from "./tools/create-workflow.ts";
 import { insertNodeTool } from "./tools/insert-node.ts";
+import { replayFaultScenarioTool } from "./tools/replay-fault-scenario.ts";
 import { auditWorkflowReliabilityCompatTool } from "./tools/workflow-tools.ts";
 
 export const MCP_PROMPT_INSTRUCTIONS = SYSTEM_PROMPT;
@@ -43,6 +44,7 @@ export const TOOLS: McpTool[] = [
   causalVerifyTool,
   createWorkflowTool,
   insertNodeTool,
+  replayFaultScenarioTool,
 ];
 
 export const TOOL_MAP = new Map(TOOLS.map(t => [t.name, t]));

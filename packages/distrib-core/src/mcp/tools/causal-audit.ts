@@ -10,6 +10,7 @@ import { Lease } from "../../physics/alphabet/vowels/lease.ts";
 import type { CompiledAlphabetGraph } from "../../physics/alphabet/types.ts";
 import { getWorkflow, type Workflow } from "../../compiler/workflow-store.ts";
 import { normalizeConsonantAlias } from "../../physics/alphabet/apply.ts";
+import { recordAuditForReplay } from "./replay-fault-scenario.ts";
 
 export interface ToolContext {
   sessionId?: string;
@@ -348,6 +349,27 @@ export const causalAuditTool: McpTool = {
         description: "Deterministic seed (default 42817)",
         default: 42817,
       },
+      mode: {
+        type: "string",
+        enum: ["iddfs", "guided"],
+        description: "Search mode: 'iddfs' (bounded exhaustive) or 'guided' (state-hash coverage-guided DST)",
+      },
+      checkQuiescence: {
+        type: "boolean",
+        description: "Run fault-free calm-down quiescence & replica convergence check",
+      },
+      useSwarm: {
+        type: "boolean",
+        description: "Enable Swarm Testing per-seed randomized fault profiles in guided mode",
+      },
+      enableBuggify: {
+        type: "boolean",
+        description: "Enable deterministic sim.buggify() boundary fault hooks",
+      },
+      enableProtocolTriggers: {
+        type: "boolean",
+        description: "Enable TigerBeetle VOPR-style protocol-aware state-transition fault triggers",
+      },
     },
     required: [],
   },
@@ -440,6 +462,11 @@ export const causalAuditTool: McpTool = {
           maxDepth,
           maxEvaluations: 5000,
           targetPath: Array.isArray(args.targetPath) ? (args.targetPath as string[]) : undefined,
+          ...(args.mode === "guided" || args.mode === "iddfs" ? { mode: args.mode } : {}),
+          ...(typeof args.checkQuiescence === "boolean" ? { checkQuiescence: args.checkQuiescence } : {}),
+          ...(typeof args.useSwarm === "boolean" ? { useSwarm: args.useSwarm } : {}),
+          ...(typeof args.enableBuggify === "boolean" ? { enableBuggify: args.enableBuggify } : {}),
+          ...(typeof args.enableProtocolTriggers === "boolean" ? { enableProtocolTriggers: args.enableProtocolTriggers } : {}),
         },
         seed,
       );
@@ -478,20 +505,34 @@ export const causalAuditTool: McpTool = {
         ? `APPROVED: ${scenario?.name ?? workflow?.name ?? scenarioId}`
         : `BLOCKED: ${scenario?.name ?? workflow?.name ?? scenarioId} [${enrichedCounterexample.map((c) => `${c.consonantKind} on ${c.businessTarget}`).join(" + ") || "violation"}]`;
 
+      const enrichedFindings = searchResult.allFindings ?? [];
+      const primaryFinding = enrichedFindings.find((f) => f.status === "proven") ?? enrichedFindings[0];
+
+      recordAuditForReplay({
+        seed,
+        scenarioId: scenario?.id ?? workflow?.id ?? scenarioId,
+        graph,
+        faultSchedule: searchResult.minimalCounterexample ?? [],
+      });
+
       return {
         success: true,
         verdict,
         status: searchResult.status,
         scenarioId: scenario?.id ?? workflow?.id,
+        seed,
         shortestDepth: searchResult.minimalCounterexample
           ? searchResult.minimalCounterexample.length
           : isApproved
             ? null
             : searchResult.depthReached,
         minimalCounterexample: enrichedCounterexample,
+        minimalSteps: primaryFinding?.minimalSteps ?? searchResult.minimalCounterexample ?? [],
+        shrinkRatio: primaryFinding?.shrinkRatio ?? 1,
         failurePath: failurePathStr,
         verdictSummary,
         violatedInvariants: searchResult.violatedInvariants ?? [],
+        findings: enrichedFindings,
         evaluationsCount: searchResult.evaluations,
         durationMs: searchResult.durationMs ?? performance.now() - startedAt,
         fingerprint: searchResult.deterministicFingerprint,

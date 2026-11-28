@@ -13,13 +13,34 @@ import { Log } from "../alphabet/vowels/log.ts";
 import { Channel } from "../alphabet/vowels/channel.ts";
 import { applyConsonant } from "../alphabet/apply.ts";
 import { auditNative } from "../alphabet/invariants/native-auditor.ts";
+import { auditCausalHistory } from "../alphabet/invariants/causal-history-checker.ts";
+import { runQuiescencePhase, type QuiescenceResult } from "../alphabet/invariants/quiescence-checker.ts";
+import {
+  attachProtocolTriggers,
+  deriveProtocolTriggers,
+  type ProtocolTriggerSpec,
+} from "../alphabet/triggers/protocol-triggers.ts";
+import { hashWorldState } from "./state-corpus.ts";
 import type { ConsonantFault } from "./search-types.ts";
 import type { Finding } from "../alphabet/invariants/finding.ts";
+
+export interface FaultExecutionOptions {
+  checkQuiescence?: boolean;
+  calmDownTicks?: number;
+  replicaGroups?: string[][];
+  enableBuggify?: boolean;
+  buggifyProbability?: number;
+  enableProtocolTriggers?: boolean;
+  protocolTriggers?: ProtocolTriggerSpec[];
+}
 
 export interface FaultExecutionResult {
   events: SimEvent[];
   findings: Finding[];
   violatedInvariants: string[];
+  stateHash?: string;
+  quiescence?: QuiescenceResult;
+  buggifyFired?: string[];
 }
 
 interface AuditorModule {
@@ -355,12 +376,17 @@ export async function executeFaultSequence(
   graph: CompiledAlphabetGraph,
   faults: ConsonantFault[],
   seed: number,
+  options?: FaultExecutionOptions,
 ): Promise<FaultExecutionResult> {
   const requestedDuplicateEvents = faults
     .filter((fault) => fault.consonantKind === "DUPLICATE")
     .reduce((total, fault) => total + Math.max(0, Number(fault.params.count) || 0), 0);
   const maxEvents = Math.min(100_000, Math.max(2_000, 2_000 + requestedDuplicateEvents * 8));
-  const sim = new Sim(seed, { maxEvents });
+  const sim = new Sim(seed, {
+    maxEvents,
+    buggifyEnabled: options?.enableBuggify ?? false,
+    buggifyProbability: options?.buggifyProbability,
+  });
 
   const cellMap = new Map<string, Cell>();
   const leaseMap = new Map<string, Lease>();
@@ -459,6 +485,13 @@ export async function executeFaultSequence(
       channelMap.set(channel.id, channel);
       vowelMap.set(channel.id, channel);
     }
+  }
+
+  if (options?.enableProtocolTriggers || (options?.protocolTriggers && options.protocolTriggers.length > 0)) {
+    const triggers = options.protocolTriggers && options.protocolTriggers.length > 0
+      ? options.protocolTriggers
+      : deriveProtocolTriggers(graph);
+    attachProtocolTriggers(sim, triggers, vowelMap);
   }
 
   // Split faults into non-channel and channel
@@ -590,6 +623,16 @@ export async function executeFaultSequence(
   while (sim.step()) {}
 
   const nativeFindings = auditNative(sim.log, vowelMap);
+  const causalHistoryFindings = auditCausalHistory(sim.log);
+
+  let quiescence: QuiescenceResult | undefined;
+  if (options?.checkQuiescence) {
+    quiescence = runQuiescencePhase(sim, vowelMap, {
+      calmDownTicks: options.calmDownTicks,
+      replicaGroups: options.replicaGroups,
+    });
+  }
+  const stateHash = hashWorldState(sim, vowelMap.values());
 
   // Convert alphabet events to LangChain JSONL
   const jsonl = convertAlphabetEventsToLangChainJsonl(sim.log, cellMap, channelMap);
@@ -604,7 +647,7 @@ export async function executeFaultSequence(
   }
 
   const uniqueFindings = new Map<string, Finding>();
-  for (const finding of [...nativeFindings, ...externalFindings]) {
+  for (const finding of [...nativeFindings, ...causalHistoryFindings, ...(quiescence?.findings ?? []), ...externalFindings]) {
     const spanIds = [...finding.evidence.span_ids].sort();
     uniqueFindings.set(`${finding.rule_id}\u0000${JSON.stringify(spanIds)}`, finding);
   }
@@ -621,6 +664,9 @@ export async function executeFaultSequence(
     events: sim.log,
     findings,
     violatedInvariants,
+    stateHash,
+    ...(quiescence ? { quiescence } : {}),
+    ...(sim.buggifyFired.length > 0 ? { buggifyFired: sim.buggifyFired } : {}),
   };
 }
 
