@@ -32,7 +32,8 @@
     "test:rackspace": "cd provers/21-rackspace-spot-k8s-breach-shutdown && node src/test-harness.ts",
     "test:apim": "cd provers/22-azure-apim-classic-credential-theft && node src/test-harness.ts",
     "test:workers": "cd provers/23-cloudflare-workers-event-drop-omission && node src/test-harness.ts",
-    "test:spike": "cd provers/24-spike-sh-recursion-blackout && node src/test-harness.ts"
+    "test:spike": "cd provers/24-spike-sh-recursion-blackout && node src/test-harness.ts",
+    "test:github": "cd provers/25-github-shared-db-cascade && node src/test-harness.ts"
   },
   "keywords": [
     "distributed-systems",

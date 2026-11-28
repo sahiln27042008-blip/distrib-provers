@@ -1,0 +1,14 @@
+{
+  "name": "@distrib-provers/github-shared-db-cascade",
+  "version": "1.0.0",
+  "description": "Deterministic Prover: GitHub Nov 25 High Database Load Multi-Surface Outage & Partial Degradation",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node src/test-harness.ts"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=22.6.0"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "workflowId": "wf-github-shared-db-cascade-2026",
+  "workflowName": "GitHub High Primary DB Load Multi-Surface Outage (Nov 25, 2026)",
+  "declaredInvariants": [
+    "r04-network-idempotency",
+    "native-lease-epoch-expiry",
+    "native-channel-cascade"
+  ],
+  "nodes": [
+    {
+      "name": "actions-webhook-runners",
+      "nodeDescription": "GitHub Actions & Webhook dispatchers flooding shared primary database",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "shared-primary-db",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "DUPLICATE", "params": { "count": 4 } }
+      ],
+      "outboundEdges": ["shared-primary-db"]
+    },
+    {
+      "name": "pr-issues-git-api",
+      "nodeDescription": "Pull Requests, Issues, Git Operations, and Packages sharing the primary DB pool",
+      "substrates": [
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "shared-primary-db",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "DELAY", "params": { "durationMs": 8000 } }
+      ],
+      "outboundEdges": ["shared-primary-db"]
+    },
+    {
+      "name": "shared-primary-db",
+      "nodeDescription": "Shared primary database connection pool without per-surface bulkhead quotas",
+      "substrates": [
+        {
+          "vowel": "LEASE",
+          "params": {
+            "maxCapacity": 16,
+            "ttlMs": 30000,
+            "overflowPolicy": "WAIT_TIMEOUT",
+            "heldDuringExternalChannel": true
+          }
+        },
+        {
+          "vowel": "CHANNEL",
+          "params": {
+            "targetNodeId": "durable-run-ledger",
+            "timeoutMs": 5000,
+            "idempotencyEnabled": false
+          }
+        }
+      ],
+      "consonants": [
+        { "kind": "SATURATE", "params": { "loadUnits": 32 } }
+      ],
+      "outboundEdges": ["durable-run-ledger"]
+    },
+    {
+      "name": "durable-run-ledger",
+      "nodeDescription": "Durable PR/Issue/Actions workflow state store",
+      "substrates": [
+        {
+          "vowel": "CELL",
+          "params": {
+            "persistence": "DURABLE",
+            "idempotencyEnforced": false,
+            "fencingTokenEnforced": false
+          }
+        }
+      ],
+      "consonants": [],
+      "outboundEdges": []
+    }
+  ]
+}
